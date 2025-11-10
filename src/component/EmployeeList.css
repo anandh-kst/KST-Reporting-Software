@@ -1,0 +1,147 @@
+
+
+.employee-list-container {
+    padding: 24px;
+}
+
+.title {
+    text-align: center;
+    font-size: 24px;
+    font-weight: bold;
+    margin-bottom: 16px;
+}
+
+.header {
+    display: flex;
+    justify-content: flex-end;
+    margin-bottom: 16px;
+}
+.bg-white-smoke {
+    background-color: #85838311;
+  }
+.add-button {
+    padding: 8px 16px;
+    background-color: #2563eb;
+    color: white;
+    font-size: 14px;
+    border-radius: 6px;
+    cursor: pointer;
+}
+
+.employee-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 16px;
+}
+
+.employee-card {
+    position: relative;
+    background: rgb(250, 255, 250);
+    padding: 16px;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+/* EmployeeList.css */
+
+/* Card Hover Effect */
+.employee-card {
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+  }
+  .employee-card:hover {
+    transform: scale(1.07) ; /* Slightly enlarges the card and moves it up slightly on hoveræ(); /* Moves the card up slightly */
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1); /* Adds a smoother shadow */
+  }
+  
+  /* Image Hover Effect */
+  .employee-image {
+    transition: transform 0.3s ease;
+  }
+  .employee-image:hover {
+    transform: scale(1.1); /* Slightly enlarges the image */
+  }
+.menu-icon {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    cursor: pointer;
+}
+
+.menu-options {
+    position: absolute;
+    top: 30px;
+    right: 10px;
+    background: white;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    border-radius: 4px;
+    overflow: hidden;
+}
+
+.edit-button,
+.delete-button {
+    width: 100%;
+    padding: 8px;
+    font-size: 14px;
+    text-align: left;
+    cursor: pointer;
+}
+
+.edit-button {
+    color: #2563eb;
+}
+
+.delete-button {
+    color: #dc2626;
+}
+
+.profile {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.profile-pic {
+    width: 60px;
+    height: 60px;
+    border-radius: 10px; /* Change to rounded edges (square shape with curved corners) */
+}
+
+.info {
+    flex: 1;
+}
+
+.name {
+    font-size: 14px;
+    font-weight: bold;
+
+}
+
+.designation {
+    color: #6b7280;
+
+}
+
+.contact-info {
+    margin-top: 10px;
+}
+
+.contact-info p {
+    font-size: 14px;
+    color: #374151;
+}
+
+.pagination {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-top: 20px;
+}
+
+.prev-button,
+.next-button {
+    padding: 6px 12px;
+    font-size: 14px;
+    color: white;
+    background-color: #1f2937;
+    border-radius: 4px;
+    cursor: pointer;
+}

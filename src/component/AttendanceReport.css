@@ -1,0 +1,121 @@
+.attendance-container {
+  /* width: 85%;
+  margin: 40px auto; */
+  padding: 30px;
+  border-radius: 12px;
+  background-color: #f4f4f4;
+  /* box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08); */
+  text-align: center;
+}
+
+/* Filter Section */
+.filters {
+  display: flex;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 15px;
+  margin-bottom: 24px;
+  width: 100%;
+}
+
+/* Dropdown Styling */
+.filters select {
+  padding: 10px 14px;
+  padding-right: 40px;
+  font-size: 12px;
+  border-radius: 8px;
+  border: 1px solid #ccc;
+  background-color: #fff;
+  background-image: url("data:image/svg+xml,%3Csvg fill='none' stroke='%23666' stroke-width='2' viewBox='0 0 24 24' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath stroke-linecap='round' stroke-linejoin='round' d='M19 9l-7 7-7-7'%3E%3C/path%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 12px center;
+  background-size: 16px;
+  appearance: none;
+  cursor: pointer;
+  transition: border 0.3s ease, box-shadow 0.3s ease;
+}
+
+.filters select:focus {
+  border-color: #4b7bec;
+  outline: none;
+  box-shadow: 0 0 0 2px rgba(75, 123, 236, 0.2);
+}
+
+/* Export Button */
+.export-btn {
+  padding: 10px 20px;
+  background-color: #0bad44;
+  color: #fff;
+  border: none;
+  border-radius: 8px;
+  font-size: 12px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+.export-btn:hover {
+  background-color: #09953c;
+}
+
+/* Scrollable Table Container */
+.table-container {
+  width: 100%;
+  max-height: 420px;
+  overflow-y: auto;
+  overflow-x: auto;
+  border-radius: 10px;
+  border: 1px solid #ddd;
+  background-color: #ffffff;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+}
+
+/* Table Styling */
+.attendance-table {
+  width: 100%;
+  border-collapse: collapse;
+  min-width: 800px;
+  font-size: 12px;
+}
+
+.attendance-table th {
+  background-color: #f0f0f0;
+  color: #333;
+  font-weight: bold;
+  text-align: center;
+  padding: 10px;
+  border: 1px solid #ddd;
+}
+
+.attendance-table td {
+  padding: 10px;
+  border: 1px solid #ddd;
+  text-align: center;
+  color: #333;
+  background-color: #fff;
+}
+
+/* Status Styling */
+.status.s    { color: blue; font-weight: bold; }
+.status.so   { color: rgb(240, 10, 240); font-weight: bold; }
+.status.lop  { color: red; font-weight: bold; }
+.status.lop-h { color: red; font-weight: bold; } /* Added for LOP-H */
+.status.pe   { color: orange; font-weight: bold; }
+.status.p    { color: rgb(2, 83, 32); font-weight: bold; }
+.status.cl   { color: rgb(247, 115, 7); font-weight: bold; }
+.status.cl-h { color: rgb(247, 115, 7); font-weight: bold; } /* Added for CL-H */
+.status.wfh  { color: rgb(8, 101, 240); font-weight: bold; }
+.status.h    { color: #888; font-weight: bold; } /* Half-day (generic) */
+.status.ho   { color: green; font-weight: bold; } /* Holiday */
+
+.status.loph { color: red; font-weight: bold; }
+.status.clh { color: rgb(247, 115, 7); font-weight: bold; }
+
+/* Loading Indicator */
+.loading-indicator {
+  font-size: 18px;
+  font-weight: bold;
+  color: #007BFF;
+  text-align: center;
+  padding: 40px;
+}

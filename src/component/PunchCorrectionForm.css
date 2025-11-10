@@ -1,0 +1,152 @@
+/* Main Container */
+.form-container {
+
+  margin: 40px auto;
+  padding: 30px;
+  background-color: #ffffff;
+  border-radius: 12px;
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
+}
+
+/* Heading */
+.form-container h2 {
+ font-size: 24px;
+  margin-bottom: 20px;
+  color: #111827;
+}
+
+/* Filters */
+.filters {
+  display: flex;
+  gap: 20px;
+  flex-wrap: wrap;
+  margin-bottom: 30px;
+}
+
+.filter-item {
+  flex: 1;
+  min-width: 200px;
+}
+
+.filter-item label {
+  display: block;
+  font-weight: 600;
+  margin-bottom: 6px;
+  color: #374151;
+}
+
+.filter-item input,
+.filter-item select {
+  width: 100%;
+  padding: 8px 10px;
+  border: 1px solid #d1d5db;
+  border-radius: 6px;
+  font-size: 14px;
+  background-color: #f9fafb;
+}
+
+/* Table Wrapper */
+.punch-table-wrapper {
+  margin-bottom: 40px;
+}
+
+/* Table Header Title */
+.punch-table-wrapper h4 {
+  margin: 20px 0 10px;
+  color: #1f2937;
+  font-size: 18px;
+}
+
+/* Table */
+.punch-table {
+  width: 100%;
+  border-collapse: collapse;
+  background-color: #ffffff;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.05);
+}
+
+.punch-table th,
+.punch-table td {
+  border: 1px solid #e5e7eb;
+  padding: 10px 12px;
+  text-align: center;
+  font-size: 14px;
+}
+
+.punch-table th {
+  background-color: #f3f4f6;
+  font-weight: 600;
+  color: #111827;
+}
+
+.punch-table input {
+  padding: 6px 10px;
+  border: 1px solid #d1d5db;
+  border-radius: 5px;
+  font-size: 14px;
+  width: 100%;
+  box-sizing: border-box;
+}
+
+/* Status Badges */
+.missing {
+  color: #dc2626;
+  background-color: #fee2e2;
+  padding: 3px 10px;
+  border-radius: 12px;
+  font-weight: 600;
+}
+
+.manual {
+  color: #b45309;
+  background-color: #fef3c7;
+  padding: 3px 10px;
+  border-radius: 12px;
+  font-weight: 600;
+}
+
+span {
+  display: inline-block;
+}
+.save-button {
+  margin-top: 10px;
+  padding: 10px 20px;
+  background-color: #2563eb;
+  color: white;
+  font-weight: 600;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+.save-button:hover {
+  background-color: #1e40af;
+}
+.pagination {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin-top: 20px;
+  gap: 10px;
+}
+
+.pagination button {
+  padding: 6px 12px;
+  font-weight: 600;
+  background-color: #2563eb;
+  color: white;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+}
+
+.pagination button:disabled {
+  background-color: #ccc;
+  cursor: not-allowed;
+}
+
+.pagination span {
+  font-weight: bold;
+}
+
+
