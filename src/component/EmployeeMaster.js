@@ -1709,8 +1709,6 @@ const WelcomeText = styled.div`
 
   h2 {
     margin: 0;
-    font-size: 1.5rem;
-    color: #1f2937;
     font-weight: 600;
     margin-bottom: 0.5rem;
     text-align: left;
@@ -1718,16 +1716,11 @@ const WelcomeText = styled.div`
 
   p {
     margin: 0.5rem 0;
-    color: #6b7280;
     line-height: 1.5;
   }
 
   @media (max-width: 768px) {
     max-width: 100%;
-
-    h2 {
-      font-size: 1.5rem;
-    }
   }
 `;
 
@@ -1775,7 +1768,7 @@ const StatsCard = styled.div`
     p {
       margin: 0;
       color: #6b7280;
-      font-size:1rem;
+      font-size: 1rem;
     }
 
     span {
@@ -1906,7 +1899,7 @@ const PieChartWrapper = styled.div`
   padding: 1rem;
   box-shadow: 0 2px 6px rgba(0, 0, 0, 0.05);
   display: flex;
-  align-items: center;  
+  align-items: center;
   justify-content: center;
   max-height: 300px;
 
@@ -2058,6 +2051,16 @@ const EmployeeMaster = () => {
   const [missingTaskLoading, setMissingTaskLoading] = useState(true);
   const [missingTaskError, setMissingTaskError] = useState("");
 
+  const [dashboardData, setDashboardData] = useState({
+    fullPresent: [],
+    fullAbsent: [],
+    halfDayLeave: [],
+    hourlyLeave: [],
+    totalEmployees: [],
+  });
+  const currentTimes = moment();
+  const displayDate =
+    currentTimes.hour() < 10 ? moment().subtract(1, "day") : currentTimes;
   // Function to close modal
   const closeModelFun = () => {
     dispatch(closeModel());
@@ -2646,7 +2649,66 @@ const EmployeeMaster = () => {
     }
   };
 
-  console.log(leaveData);
+  useEffect(() => {
+    const attendanceSummary = async () => {
+      try {
+        const response = await fetch(
+          `${process.env.REACT_APP_API_URL}/attendanceDashboard`,
+          {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ date: displayDate.format("YYYY-MM-DD") }),
+          }
+        );
+
+        const data = await response.json();
+        const result = data.data;
+
+        // Ensure these are arrays
+        const fullPresent = Array.isArray(result.FullPresent)
+          ? result.FullPresent
+          : [];
+        const fullAbsent = Array.isArray(result.fullAbsent)
+          ? result.fullAbsent
+          : [];
+        const halfDayLeave = Array.isArray(result.halfLeave)
+          ? result.halfLeave
+          : [];
+        const hourlyLeave = Array.isArray(result.hourlyLeave)
+          ? result.hourlyLeave
+          : [];
+        const totalEmployees = Array.isArray(result.allIds)
+          ? result.allIds
+          : [];
+
+        // Log counts immediately from fetched data
+        console.log("Full Present:", fullPresent.length);
+        console.log("Full Absent:", fullAbsent.length);
+        console.log("Half Day Leave:", halfDayLeave.length);
+        console.log("Hourly Leave:", hourlyLeave.length);
+        console.log("Total Employees:", totalEmployees.length);
+
+        // Set state
+        setDashboardData({
+          fullPresent: fullPresent.length,
+          fullAbsent: fullAbsent.length,
+          halfDayLeave: halfDayLeave.length,
+          hourlyLeave: hourlyLeave.length,
+          totalEmployees: totalEmployees.length,
+        });
+      } catch (error) {
+        console.error("Error fetching attendance data:", error);
+      }
+    };
+
+    attendanceSummary();
+  }, []);
+
+  // If you need to react to state changes
+  useEffect(() => {
+    console.log("Dashboard data updated:", dashboardData);
+  }, [dashboardData]);
+
   // ========== Render ==========
   return (
     <DashboardContainer>
@@ -2663,17 +2725,19 @@ const EmployeeMaster = () => {
             <div className="flex items-center flex-col  sm:flex-row ">
               <WelcomeText>
                 {userData?.userType === "Admin" ? (
-                  <h2>
+                  <h2 className="text-gray-700 text-[22px]">
                     Hi <span>Admin</span> Welcome to
                   </h2>
                 ) : (
-                  <h2>Hi {userData?.employeeName} Welcome to</h2>
+                  <h2 className="text-gray-700 text-[22px]">
+                    Hi {userData?.employeeName} Welcome to
+                  </h2>
                 )}
-                <p>
+                <p className="text-[17px]">
                   <span style={{ color: "green", fontWeight: "700" }}>KST</span>{" "}
                   Reporting Software
                 </p>
-                <p>{greeting}, have a nice day !</p>
+                <p className="text-[15px]">{greeting}, have a nice day !</p>
               </WelcomeText>
               <WelcomeImage src={welcomeImage} alt="Welcome" />
             </div>
@@ -2685,9 +2749,18 @@ const EmployeeMaster = () => {
 
           <div className="bg-white py-10 rounded-xl">
             <div className="px-6">
-              <h2 className="text-xl pb-5 font-bold">Attendance Summary</h2>
+              <div className="flex items-center justify-between px-5 flex-nowrap">
+                <h2 className="text-xl pb-5 font-bold text-gray-600">
+                  {displayDate.format("DD-MM-YYYY")} (
+                  {displayDate.format("dddd")})
+                </h2>
+                <h2 className="text-xl pb-5 font-bold text-gray-600">
+                  Attendance Summary
+                </h2>
+              </div>
+
               <div className="summary flex flex-wrap  items-center justify-center gap-y-10">
-                <div className="summary-item w-[250px] flex flex-col items-center gap-y-2">
+                <div className="summary-item w-[180px] flex flex-col items-center gap-y-2">
                   <h3>Full Presents</h3>
                   <h1
                     className="border-l-8 border-green-700 text-3xl font-extrabold text-green-700 rounded-md bg-slate-100 w-[150px] h-[65px] shadow-md flex items-center justify-center "
@@ -2696,22 +2769,31 @@ const EmployeeMaster = () => {
                       letterSpacing: "2px",
                     }}
                   >
-                    12
+                    {dashboardData.fullPresent}{" "}
+                    <span className="text-gray-500 text-sm mt-5 ml-2">
+                      {" "}
+                      / {dashboardData.totalEmployees}
+                    </span>
                   </h1>
                 </div>
-                <div className="summary-item w-[250px] flex flex-col items-center gap-y-2">
-                  <h3>Hourly Leaves </h3>
+                <div className="summary-item w-[180px] flex flex-col items-center gap-y-2">
+                  <h3>Partial Presents</h3>
                   <h1
-                    className=" border-l-8 border-yellow-300 text-3xl font-extrabold text-yellow-400  rounded-md bg-slate-100 w-[150px] h-[65px] shadow-md flex items-center justify-center "
+                    className="border-l-8 border-green-400 text-3xl font-extrabold text-green-500 rounded-md bg-slate-100 w-[150px] h-[65px] shadow-md flex items-center justify-center "
                     style={{
                       fontFamily: "'Rajdhani', sans-serif",
                       letterSpacing: "2px",
                     }}
                   >
-                    01
+                    {dashboardData.halfDayLeave + dashboardData.hourlyLeave}{" "}
+                    <span className="text-gray-500 text-sm mt-5 ml-2">
+                      {" "}
+                      / {dashboardData.totalEmployees}
+                    </span>
                   </h1>
                 </div>
-                <div className="summary-item w-[250px] flex flex-col items-center gap-y-2">
+
+                <div className="summary-item w-[180px] flex flex-col items-center gap-y-2">
                   <h3>Half-Day Leaves</h3>
                   <div className="flex">
                     <h1
@@ -2721,11 +2803,30 @@ const EmployeeMaster = () => {
                         letterSpacing: "2px",
                       }}
                     >
-                      02
+                      {dashboardData.halfDayLeave}{" "}
+                      <span className="text-gray-500 text-sm mt-5 ml-2">
+                        {" "}
+                        / {dashboardData.totalEmployees}
+                      </span>
                     </h1>
                   </div>
                 </div>
-
+                <div className="summary-item w-[180px] flex flex-col items-center gap-y-2">
+                  <h3>Hourly Leaves </h3>
+                  <h1
+                    className=" border-l-8 border-yellow-300 text-3xl font-extrabold text-yellow-400  rounded-md bg-slate-100 w-[150px] h-[65px] shadow-md flex items-center justify-center "
+                    style={{
+                      fontFamily: "'Rajdhani', sans-serif",
+                      letterSpacing: "2px",
+                    }}
+                  >
+                    {dashboardData.hourlyLeave}{" "}
+                    <span className="text-gray-500 text-sm mt-5 ml-2">
+                      {" "}
+                      / {dashboardData.totalEmployees}
+                    </span>
+                  </h1>
+                </div>
                 <div className="summary-item w-[250px] flex flex-col items-center gap-y-2">
                   <h3>Full Absent</h3>
                   <h1
@@ -2735,7 +2836,11 @@ const EmployeeMaster = () => {
                       letterSpacing: "2px",
                     }}
                   >
-                    03
+                    {dashboardData.fullAbsent}{" "}
+                    <span className="text-gray-500 text-sm mt-5 ml-2">
+                      {" "}
+                      / {dashboardData.totalEmployees}
+                    </span>
                   </h1>
                 </div>
               </div>
@@ -2756,7 +2861,9 @@ const EmployeeMaster = () => {
                 <span>{absentEmployees}</span>
               </div>
             </div> */}
-            <h1 className="text-[18px] font-semibold mb-4 text-gray-800">On Leave Status</h1>
+            <h1 className="text-[18px] font-semibold mb-4 text-gray-800">
+              On Leave Status
+            </h1>
             <div className="attendance-status">
               {leaveData.length > 0 ? (
                 leaveData.map((leave, idx) => (
@@ -2770,8 +2877,6 @@ const EmployeeMaster = () => {
             </div>
           </StatsCard>
 
-
-          
           <h3>Missing Daily Task Employees</h3>
           {missingEmployees.length === 0 ? (
             <p>No missing task records found for today.</p>
@@ -2958,7 +3063,9 @@ const EmployeeMaster = () => {
           )}
 
           <UpcomingCard>
-            <h1 className="text-[18px] font-semibold mb-4 text-gray-800">Upcoming Events</h1>
+            <h1 className="text-[18px] font-semibold mb-4 text-gray-800">
+              Upcoming Events
+            </h1>
             {upcomingEventsWithin2Days.length > 0 ? (
               <ul>
                 {upcomingEventsWithin2Days.map((evt, idx) => (
@@ -3020,7 +3127,10 @@ const EmployeeMaster = () => {
           </div>
 
           <PieChartWrapper>
-            <div style={{ width: "200px", height: "200px", marginTop: "10px" }} className="flex flex-col items-center justify-center gap-y-5">
+            <div
+              style={{ width: "200px", height: "200px", marginTop: "10px" }}
+              className="flex flex-col items-center justify-center gap-y-5"
+            >
               <span className="font-bold text-[18px]">Late Punch Records</span>
               <Pie data={pieData} options={pieOptions} />
             </div>
