@@ -1672,6 +1672,7 @@ const ContentArea = styled.div`
 `;
 
 const MainSection = styled.div`
+  overflow-x: auto;
   display: flex;
   flex-direction: column;
   gap: 1.5rem;
@@ -2749,12 +2750,12 @@ const EmployeeMaster = () => {
 
           <div className="bg-white py-10 rounded-xl">
             <div className="px-6">
-              <div className="flex items-center justify-between px-5 flex-nowrap">
-                <h2 className="text-xl pb-5 font-bold text-gray-600">
+              <div className="flex items-center justify-between px-5 flex-wrap pb-5">
+                <h2 className="text-xl  font-bold text-gray-600">
                   {displayDate.format("DD-MM-YYYY")} (
                   {displayDate.format("dddd")})
                 </h2>
-                <h2 className="text-xl pb-5 font-bold text-gray-600">
+                <h2 className="text-xl font-bold text-gray-600">
                   Attendance Summary
                 </h2>
               </div>

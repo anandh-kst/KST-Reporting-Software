@@ -629,6 +629,8 @@ import { usePageTitle } from "../lib/pageTitle";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faBriefcase } from "@fortawesome/free-solid-svg-icons";
 import EmployeesAssets from "./EmployeesAssets";
+import EmployeeAssetForm from "./AssetsForm";
+import EmployeeAssetFormEdit from "./AssetsFromEdit";
 
 const EmployeeReport = React.lazy(() =>
   import(/* webpackPrefetch: true */ "./EmployeeReport")
@@ -924,7 +926,7 @@ const Dashboard = () => {
             style={{ cursor: "pointer" }}
           />
         </div>
-        <div>
+        <div className="hidden sm:flex">
           <h1 className="text-xl font-bold text-blue-900">
             {usePageTitle() || "Dashboard"}
           </h1>
@@ -2288,6 +2290,8 @@ const Dashboard = () => {
             <Route path="/rules_form" element={<RulesMaster />} />
             <Route path="/LateReport" element={<LateReport />} />
             <Route path="/employeesAssets" element={<EmployeesAssets />} />
+                <Route path="/EmployeeAssetForm" element={<EmployeeAssetForm />} />
+                <Route path="/EmployeeAssetFormEdit/:id" element={<EmployeeAssetFormEdit />} />
             <Route
               path="/PunchCorrectionForm"
               element={<PunchCorrectionForm />}

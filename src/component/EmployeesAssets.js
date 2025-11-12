@@ -1,248 +1,233 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faPlus, faPen, faTrash } from "@fortawesome/free-solid-svg-icons";
+import { faPlus, faEllipsisV,faXmark } from "@fortawesome/free-solid-svg-icons";
+import { Link } from "react-router-dom";
+import axios from "axios";
+import moment from "moment";
+import { useNavigate } from "react-router-dom";
+
 
 const EmployeesAssets = () => {
-  // Dummy employee + asset data (replace with API later)
-  const [employees, setEmployees] = useState([
-    {
-      id: 1,
-      name: "Anandh",
-      image: "https://i.pravatar.cc/80?img=1",
-      assets: [
-        {
-          id: 1,
-          si: 1,
-          name: "Laptop",
-          type: "Electronics",
-          model: "Dell XPS 13",
-          qty: 1,
-          remarks: "Company issued",
-        },
-        {
-          id: 2,
-          si: 2,
-          name: "Mouse",
-          type: "Accessory",
-          model: "Logitech M331",
-          qty: 1,
-          remarks: "Wireless",
-        },
-      ],
-    },
-    {
-      id: 2,
-      name: "Priya",
-      image: "https://i.pravatar.cc/80?img=2",
-      assets: [
-        {
-          id: 1,
-          si: 1,
-          name: "Phone",
-          type: "Electronics",
-          model: "iPhone 14",
-          qty: 1,
-          remarks: "Official contact",
-        },
-      ],
-    },
-  ]);
+  const [employees, setEmployees] = useState([]);
+  const [assets, setAssets] = useState([]);
+  const [menuOpen, setMenuOpen] = useState();
+  const nav=useNavigate()
 
-  // Form state
-  const [newAsset, setNewAsset] = useState({
-    si: "",
-    name: "",
-    type: "",
-    model: "",
-    qty: "",
-    remarks: "",
-  });
-
-  const [selectedEmp, setSelectedEmp] = useState(null);
-
-  // Add Asset
-  const handleAddAsset = (empId) => {
-    if (!newAsset.name) return alert("Please fill asset name");
-    setEmployees((prev) =>
-      prev.map((emp) =>
-        emp.id === empId
-          ? {
-              ...emp,
-              assets: [
-                ...emp.assets,
-                {
-                  ...newAsset,
-                  id: Date.now(),
-                  si: emp.assets.length + 1,
-                },
-              ],
-            }
-          : emp
-      )
-    );
-    setNewAsset({
-      si: "",
-      name: "",
-      type: "",
-      model: "",
-      qty: "",
-      remarks: "",
-    });
-    setSelectedEmp(null);
+  const getAssets = async () => {
+    try {
+      let res = await axios.get(`${process.env.REACT_APP_API_URL}/getAssets`);
+      res = res.data;
+      console.log(res.data);
+      setAssets(res.data);
+    } catch (error) {
+      console.log(error);
+    }
+  };
+  const getEmployees = async () => {
+    try {
+      let res = await axios.get(
+        `${process.env.REACT_APP_API_URL}/getAllEmployees`
+      );
+      res = res.data;
+      console.log(res.data);
+      setEmployees(res.data);
+    } catch (err) {
+      console.error(err);
+    }
   };
 
-  // Delete Asset
-  const handleDeleteAsset = (empId, assetId) => {
-    setEmployees((prev) =>
-      prev.map((emp) =>
-        emp.id === empId
-          ? { ...emp, assets: emp.assets.filter((a) => a.id !== assetId) }
-          : emp
-      )
+  // utils.js or same component file
+  const getProfileImage = (employees, empId, apiUrl) => {
+    const empData = employees.find(
+      (e) => String(e.employeeId) === String(empId)
     );
+    const profileUrl = empData?.profileUrl;
+
+    if (!profileUrl) return "/default-user.png"; // fallback for missing photo
+
+    // If already a full URL, return as is
+    if (profileUrl.startsWith("http://") || profileUrl.startsWith("https://")) {
+      return profileUrl;
+    }
+
+    // Otherwise, assume it’s from multer uploads folder
+    return `${apiUrl}/uploads/Images/${profileUrl}`;
   };
+
+  const deleteHandler = async (id) => {
+    if (window.confirm("Do you want to delete?")) {
+      try {
+        const result = await axios.delete(
+          `${process.env.REACT_APP_API_URL}/deleteAsset/${id}`
+        );
+        if (result.data.status === "Success") {
+          alert("Deleted Successfully");
+          getAssets();
+        } else {
+          alert("Something went wrong");
+        }
+      } catch (err) {
+        alert(err);
+        console.log(err);
+      }
+    }
+  };
+
+  const handleReturned = async (id) => {
+    if (window.confirm("Are they returned ?")) {
+      try {
+        const res = await axios.put(
+          `${process.env.REACT_APP_API_URL}/updateAsset/${id}`,
+          {
+            returnDate: moment().format("YYYY-MM-DD"),
+          }
+        );
+        if (res.data.status === "Success") {
+          alert("Returned Successfully");
+          getAssets();
+        }
+      } catch (err) {
+        alert("Something went wrong");
+        console.log(err);
+      }
+    }
+  };
+  useEffect(() => {
+    getAssets();
+    getEmployees();
+  }, []);
 
   return (
-    <div className="p-6 bg-gray-50 min-h-screen">
+    <div className="p-6 bg-gray-50 min-h-screen relative">
       <div className="space-y-6">
-        {employees.map((emp) => (
+        {assets.map((emp) => (
           <div
-            key={emp.id}
-            className="bg-white rounded-xl shadow-md p-4 md:p-6 "
+            key={emp[0]}
+            className={`bg-white rounded-xl shadow-md p-4 md:p-6`}
           >
-            {/* Employee Header */}
             <div className="flex items-center justify-between mb-5">
               <div className="flex gap-x-4">
                 <img
-                  src={emp.image}
-                  alt={emp.name}
+                  src={getProfileImage(
+                    employees,
+                    emp[0],
+                    process.env.REACT_APP_API_URL
+                  )}
+                  alt={employees.find((e) => e.employeeId === emp[0])?.name}
                   className="w-12 h-12 rounded-full object-cover border"
                 />
-                <div className="flex flex-col gap-y-[2px]   justify-center">
-                  <h2 className="text-md font-semibold text-gray-800 flex items-center m-0">
-                    {emp.name}
+                <div className="flex flex-col justify-center items-start">
+                  <h2 className="text-lg font-semibold text-gray-800 m-0">
+                    {employees.map((e) => {
+                      if (emp[0] === e.employeeId) {
+                        return e.name;
+                      }
+                      return null;
+                    })}
                   </h2>
-                  <p className="text-[12px] text-gray-500 flex items-center">
-                    Total Assets: {emp.assets.length}
+                  <p className="text-[12px] text-gray-500">
+                    Total Assets : {emp[1].length}
                   </p>
                 </div>
               </div>
-              <button
-                className="bg-blue-600 hover:bg-blue-700 text-white px-3 py-2 rounded-lg text-sm flex items-center gap-2"
-                onClick={() =>
-                  setSelectedEmp(selectedEmp === emp.id ? null : emp.id)
-                }
-              >
-                <FontAwesomeIcon icon={faPlus} />
-                <span>Add Asset</span>
-              </button>
             </div>
 
             {/* Asset List */}
             <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
-              {emp.assets.map((asset) => (
+              {emp[1].map((asset) => (
                 <div
-                  key={asset.id}
-                  className="border rounded-lg p-4 bg-gray-50 flex flex-col justify-between relative"
+                  key={asset.assetId}
+                  className={`border ${
+                    asset.returnDate ? "bg-red-50" : "bg-green-50"
+                  } rounded-lg p-4  relative`}
                 >
-                  <div className="space-y-1 text-[12px] text-gray-700">
-                    <p>
-                      <strong>Name : </strong> {asset.name}
+                  <div className=" text-[12px] text-gray-500">
+                    <p className="text-[14px] text-gray-900 mb-1">
+                      <strong>Name:</strong> {asset.assetName}
                     </p>
                     <p>
-                      <strong>Type : </strong> {asset.type}
+                      <strong>Type:</strong> {asset.assetType}
                     </p>
                     <p>
-                      <strong>Model : </strong> {asset.model}
+                      <strong>Model:</strong> {asset.serialNumber}
                     </p>
                     <p>
-                      <strong>Qty : </strong> {asset.qty}
+                      <strong>Qty:</strong> {asset.qty}
                     </p>
                     <p>
-                      <strong>Remarks : </strong> {asset.remarks}
+                      <strong>Remarks:</strong> {asset.remarks}
+                    </p>
+                    <p>
+                      <strong>issueDate:</strong>{" "}
+                      {moment(asset.issueDate).format("YYYY-MM-DD")}
+                    </p>
+                    <p>
+                      <strong>returnDate:</strong>{" "}
+                      {asset.returnDate
+                        ? moment(asset.returnDate).format("YYYY-MM-DD")
+                        : "Not returned yet"}
                     </p>
                   </div>
-                  <div className="flex justify-end mt-3 gap-3 absolute bottom-3 right-3">
-                    <button className="text-blue-600 hover:text-blue-800">
-                      <FontAwesomeIcon icon={faPen} />
-                    </button>
+
+                  {/* Three-dot menu */}
+                  <div className="absolute top-3 right-3">
                     <button
-                      onClick={() => handleDeleteAsset(emp.id, asset.id)}
-                      className="text-red-500 hover:text-red-700"
+                      onClick={() =>
+                        menuOpen === asset.assetId
+                          ? setMenuOpen(null)
+                          : setMenuOpen(asset.assetId)
+                      }
+                      className="text-gray-600 hover:text-gray-800 p-4"
                     >
-                      <FontAwesomeIcon icon={faTrash} />
+                     {menuOpen === asset.assetId ? <FontAwesomeIcon icon={faXmark} /> :<FontAwesomeIcon icon={faEllipsisV}/>}  
                     </button>
+
+                    {menuOpen === asset.assetId && (
+                      <div className="absolute right-0 mt-2 w-32 bg-white border rounded-lg shadow-md z-10">
+                        <button onClick={()=> nav("/dashboard/EmployeeAssetFormEdit/"+asset.assetId) } className="block w-full text-left px-4 py-2 text-sm hover:bg-gray-100">
+                          Edit
+                        </button>
+
+                        <button
+                          onClick={() => {
+                            asset.returnDate
+                              ? alert("Already returned")
+                              : handleReturned(asset.assetId);
+                            setMenuOpen(null);
+                          }}
+                          className="block w-full text-left px-4 py-2 text-sm text-green-600 hover:bg-gray-100"
+                        >
+                          Returned
+                        </button>
+                        <button
+                          onClick={() => {
+                            deleteHandler(asset.assetId);
+                            setMenuOpen(null);
+                          }}
+                          className="block w-full text-left px-4 py-2 text-sm text-red-700 hover:bg-gray-100"
+                        >
+                          Delete
+                        </button>
+                      </div>
+                    )}
                   </div>
                 </div>
               ))}
             </div>
-
-            {/* Add Asset Form */}
-            {selectedEmp === emp.id && (
-              <div className="mt-6 bg-blue-50 border border-blue-200 p-4 rounded-lg">
-                <h3 className="font-semibold text-blue-700 mb-3">
-                  Add New Asset
-                </h3>
-                <div className="grid md:grid-cols-3 gap-3">
-                  <input
-                    type="text"
-                    placeholder="Asset Name"
-                    className="border rounded-md px-3 py-2 text-sm"
-                    value={newAsset.name}
-                    onChange={(e) =>
-                      setNewAsset({ ...newAsset, name: e.target.value })
-                    }
-                  />
-                  <input
-                    type="text"
-                    placeholder="Type"
-                    className="border rounded-md px-3 py-2 text-sm"
-                    value={newAsset.type}
-                    onChange={(e) =>
-                      setNewAsset({ ...newAsset, type: e.target.value })
-                    }
-                  />
-                  <input
-                    type="text"
-                    placeholder="Model"
-                    className="border rounded-md px-3 py-2 text-sm"
-                    value={newAsset.model}
-                    onChange={(e) =>
-                      setNewAsset({ ...newAsset, model: e.target.value })
-                    }
-                  />
-                  <input
-                    type="number"
-                    placeholder="Quantity"
-                    className="border rounded-md px-3 py-2 text-sm"
-                    value={newAsset.qty}
-                    onChange={(e) =>
-                      setNewAsset({ ...newAsset, qty: e.target.value })
-                    }
-                  />
-                  <input
-                    type="text"
-                    placeholder="Remarks"
-                    className="border rounded-md px-3 py-2 text-sm"
-                    value={newAsset.remarks}
-                    onChange={(e) =>
-                      setNewAsset({ ...newAsset, remarks: e.target.value })
-                    }
-                  />
-                  <button
-                    onClick={() => handleAddAsset(emp.id)}
-                    className="bg-blue-600 text-white rounded-md px-3 py-2 text-sm hover:bg-blue-700"
-                  >
-                    Save Asset
-                  </button>
-                </div>
-              </div>
-            )}
           </div>
         ))}
+      </div>
+
+      {/* Floating Add Button */}
+      <div className="fixed bottom-10 right-10">
+        <Link to="/dashboard/EmployeeAssetForm">
+          <button className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-3 rounded-lg text-md flex items-center gap-2 shadow-lg">
+            <FontAwesomeIcon icon={faPlus} />
+            <span>Add Asset</span>
+          </button>
+        </Link>
       </div>
     </div>
   );
 };
-
 export default EmployeesAssets;
