@@ -2034,7 +2034,7 @@ const EmployeeMaster = () => {
     totalDaysLate: 0,
     totalLateHours: 0,
   });
-
+  const [approvedLeaved,setApprovedLeaved] = useState([]);
   const [presentEmployeeCount, setPresentEmployeeCount] = useState(0);
 
   const [calendarDays, setCalendarDays] = useState([]);
@@ -2363,6 +2363,7 @@ const EmployeeMaster = () => {
           // Process each employee's IN punches grouped by date
           Object.keys(groupedByEmployee).forEach((empKey) => {
             const employeeData = groupedByEmployee[empKey];
+            console.log(employeeData)
             const inPunches = employeeData.filter(
               (item) => item.logType === "In"
             );
@@ -2382,6 +2383,7 @@ const EmployeeMaster = () => {
               return acc;
             }, {});
 
+            console.log("Grouped by Date:", groupedByDate);
             Object.keys(groupedByDate).forEach((dateStr) => {
               const times = groupedByDate[dateStr].sort((a, b) => a - b);
 
@@ -2658,7 +2660,8 @@ const EmployeeMaster = () => {
           {
             method: "POST",
             headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({ date: displayDate.format("YYYY-MM-DD") }),
+           body: JSON.stringify({ date: displayDate.format("YYYY-MM-DD") }),
+            // body: JSON.stringify({ date: "2025-10-28" }),
           }
         );
 
@@ -2704,6 +2707,28 @@ const EmployeeMaster = () => {
 
     attendanceSummary();
   }, []);
+
+
+
+  const fetchLeaveApprovels= async()=>{
+      try{
+        const res= await axios.post(`${process.env.REACT_APP_API_URL}/attendanceSummary`,
+          //{date: displayDate.format("YYYY-MM-DD")}
+        {date: "2025-10-28"}
+        );
+        const result =res.data;
+       setApprovedLeaved(result.data["leaveApprovals"]);
+       console.log("approvedLeaved :",result.data.leaveApprovals);
+
+      }
+      catch(err){
+           console.log(err);
+      }
+  }
+  useEffect(()=>{
+    fetchLeaveApprovels();
+  },[])
+
 
   // If you need to react to state changes
   useEffect(() => {

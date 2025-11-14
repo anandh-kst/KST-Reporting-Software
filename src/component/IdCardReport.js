@@ -200,6 +200,7 @@ const IdCardReport = () => {
 
   return (
     <>
+    <div className="pt-8 p-5 bg-gray-200 rounded-md">
       <form onSubmit={handleSubmit}>
         <div className="grid gap-6 mb-6 md:grid-cols-2">
           <InputField
@@ -279,6 +280,7 @@ const IdCardReport = () => {
           </button>
         </div>
       </form>
+    </div>
     </>
   );
 };

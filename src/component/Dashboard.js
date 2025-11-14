@@ -700,7 +700,7 @@ const Dashboard = () => {
   const [previewUrl, setPreviewUrl] = useState(null);
   const [uploadMessage, setUploadMessage] = useState("");
   const [isUploading, setIsUploading] = useState(false);
-
+console.log("formdata",userData)
   useEffect(() => {
     const handleResize = () => {
       if (window.innerWidth < 1024) {
@@ -835,11 +835,10 @@ const Dashboard = () => {
 
     try {
       const formData = new FormData();
-      formData.append("profileImage", selectedFile);
-      formData.append("employeeId", userData?.employeeId);
-
+      formData.append("profileUrl", selectedFile);
+       //http://localhost:5000/updateProfileImage/kst89
       const response = await fetch(
-        `${process.env.REACT_APP_API_URL}/api/upload-profile-picture`,
+        `${process.env.REACT_APP_API_URL}/updateProfileImage/${userData?.employeeId}`,
         {
           method: "POST",
           body: formData,
@@ -963,6 +962,7 @@ const Dashboard = () => {
                   e.target.src = userIcon;
                 }}
               />
+            
               <div className="user-info">
                 <h3 className="user-name">
                   {userData?.employeeName || "User"}
@@ -991,7 +991,7 @@ const Dashboard = () => {
                 />
               </svg>
             </button>
-
+            {/* <p>{`${process.env.REACT_APP_API_URL}/uploads/Images/${userData.profileUrl}`}</p> */}
             {userDropdownOpen && (
               <div className="dropdown-menu">
                 <button onClick={openProfileModal} className="dropdown-item">

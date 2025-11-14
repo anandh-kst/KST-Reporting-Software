@@ -8,35 +8,37 @@ const TaskList = React.lazy(() => import(/* webpackPrefetch: true */ "../module/
 const TaskListOld = React.lazy(() => import(/* webpackPrefetch: true */ "../module/TaskListOld"));
 
 const ReportHistory = () => {
+  const [category, setCategory] = useState("employeeReport");
+
   return (
-    <div className="bg-whitesmoke min-h-screen">
-      <nav className="bg-white-50 shadow-md p-4 rounded-lg">
-        <div className="flex items-center max-w-screen-xl px-4 mx-auto">
-          <ul className="flex flex-row font-medium space-x-8 text-sm">
+    <div className="bg-whitesmoke min-h-screen px-2 py-8 bg-gray-200 rounded-md">
+      <nav className="bg-white-50 p-4 rounded-lg">
+        <div className="flex items-center max-w-screen-xl px-4 mx-auto ">
+          <ul className=" flex font-medium space-x-8 text-sm w-full items-center justify-center flex-wrap gap-y-4">
             <li>
               <Link to="/dashboard/report-history">
-                <button className={`px-6 py-2 rounded-full border-2 border-blue-500 text-blue-500 hover:bg-blue-100 transition`}>
+                <button onClick={() => setCategory("employeeReport")} className={`  px-6 py-2 rounded-full border-2 ${category === "employeeReport" ? "bg-blue-500 text-white" : ""  } border-blue-500 text-blue-500 hover:bg-blue-500 hover:text-white transition`}>
                   Employee Report
                 </button>
               </Link>
             </li>
-            <li>
-              <Link to="/dashboard/report-history/id-card-report">
-                <button className={`px-6 py-2 rounded-full border-2 border-blue-500 text-blue-500 hover:bg-blue-100 transition`}>
+            <li >
+              <Link to="/dashboard/report-history/id-card-report" >
+                <button onClick={() => setCategory("idCardReports")} className={`px-6 py-2 rounded-full border-2 ${ category === "idCardReports" ? "bg-blue-500 text-white" : ""  } border-blue-500 text-blue-500 hover:bg-blue-500 hover:text-white  transition`}>
                   ID Card Reports
                 </button>
               </Link>
             </li>
             <li>
               <Link to="/dashboard/report-history/taskList">
-                <button className={`px-6 py-2 rounded-full border-2 border-blue-500 text-blue-500 hover:bg-blue-100 transition`}>
+                <button onClick={ () => setCategory("dailyTask")} className={`px-6 py-2 rounded-full border-2 ${ category === "dailyTask" ? "bg-blue-500 text-white" : ""  } border-blue-500 text-blue-500 hover:bg-blue-500 hover:text-white  transition`}>
                   Daily Task
                 </button>
               </Link>
             </li>
             <li>
               <Link to="/dashboard/report-history/taskListOld">
-                <button className={`px-6 py-2 rounded-full border-2 border-blue-500 text-blue-500 hover:bg-blue-100 transition`}>
+                <button onClick={ () => setCategory("dailyTaskOld")} className={`px-6 py-2 rounded-full border-2 ${ category === "dailyTaskOld" ? "bg-blue-500 text-white" : ""  } border-blue-500 text-blue-500 hover:bg-blue-500 hover:text-white  transition`}>
                   Daily Task Old
                 </button>
               </Link>
@@ -47,7 +49,7 @@ const ReportHistory = () => {
 
       
       
-      <div className="mt-6">
+      <div className="mt-6 ">
         <Suspense fallback={<div>Loading...</div>}>
           <Routes>
             <Route path="/" element={<EmployeeReportList />} />

@@ -210,13 +210,20 @@ const WelcomeText = styled.div`
     margin: 0.5rem 0;
     color: #6b7280;
     line-height: 1.5;
+
   }
 
   @media (max-width: 768px) {
-    max-width: 100%;
-
+  display:flex;
+  flex-direction:column;
+  item-align: center;
+  justify-content: center;
+  max-width: 100%;
+  p{
+    font-size:16px;
+  }
     h2 {
-      font-size: 1.5rem;
+      font-size:20px;
     }
   }
 `;
@@ -239,8 +246,7 @@ const WelcomeImage = styled.img`
 
   @media (max-width: 768px) {
     margin-left: 0;
-    margin-top: 1rem;
-    max-width: 120px; /* Optional: even smaller on mobile screens */
+    max-width: 200px; /* Optional: even smaller on mobile screens */
   }
 `;
 
@@ -356,10 +362,10 @@ const PieChartWrapper = styled.div`
   display: flex;
   align-items: center;
   justify-content: center;
-  min-height: 350px;
+  max-height: 300px;
 
   @media (max-width: 768px) {
-    min-height: 250px;
+    height: 250px;
     padding: 0.5rem;
   }
 `;
@@ -906,14 +912,12 @@ const EmployeeMaster = () => {
   // ========== Render ==========
   return (
     <DashboardContainer>
-      <Header>
+      {/* <Header>
         <HeaderLeft>
           <h1>Dashboard</h1>
-          <DateTimeContainer>
-           {currentTimeWithSeconds}
-          </DateTimeContainer>
+          <DateTimeContainer>{currentTimeWithSeconds}</DateTimeContainer>
         </HeaderLeft>
-      </Header>
+      </Header> */}
 
       <ContentArea>
         <MainSection>

@@ -38,7 +38,9 @@ const EmployeeReportList = () => {
   useEffect(() => {
     const fetchEmployeeList = async () => {
       try {
-        const response = await axios.post(`${process.env.REACT_APP_API_URL}/employee_list/`);
+        const response = await axios.post(
+          `${process.env.REACT_APP_API_URL}/employee_list/`
+        );
         if (response.data.status === "Success") {
           setEmployeeList(response.data.data);
         }
@@ -60,7 +62,10 @@ const EmployeeReportList = () => {
         toDate,
       };
 
-      const apiEndpoint = userType === "Admin" || designation === "Sr. Technical Head" ? `${process.env.REACT_APP_API_URL}/reportHistory_admin` : `${process.env.REACT_APP_API_URL}/reportHistory/${employeeId}`;
+      const apiEndpoint =
+        userType === "Admin" || designation === "Sr. Technical Head"
+          ? `${process.env.REACT_APP_API_URL}/reportHistory_admin`
+          : `${process.env.REACT_APP_API_URL}/reportHistory/${employeeId}`;
 
       const response = await axios.post(apiEndpoint, payload);
       const { status, data, totalRecords } = response.data;
@@ -70,16 +75,24 @@ const EmployeeReportList = () => {
         setReportData(data || []);
 
         if (userType === "Admin") {
-          const employeeNames = [...new Set(data.flatMap((report) => report.name))];
+          const employeeNames = [
+            ...new Set(data.flatMap((report) => report.name)),
+          ];
           setEmployees(["All", ...employeeNames]);
 
           const existingEvaluations = {};
           const existingTeamLeaderReviews = {};
 
           data.forEach((dateItem) => {
-            existingEvaluations[dateItem.id] = typeof dateItem.evaluation === "string" ? JSON.parse(dateItem.evaluation) : dateItem.evaluation || {};
+            existingEvaluations[dateItem.id] =
+              typeof dateItem.evaluation === "string"
+                ? JSON.parse(dateItem.evaluation)
+                : dateItem.evaluation || {};
 
-            existingTeamLeaderReviews[dateItem.id] = typeof dateItem.teamLeaderReview === "string" ? JSON.parse(dateItem.teamLeaderReview) : dateItem.teamLeaderReview || {};
+            existingTeamLeaderReviews[dateItem.id] =
+              typeof dateItem.teamLeaderReview === "string"
+                ? JSON.parse(dateItem.teamLeaderReview)
+                : dateItem.teamLeaderReview || {};
           });
           setEvaluations(existingEvaluations);
           setTeamLeaderReviews(existingTeamLeaderReviews);
@@ -136,7 +149,9 @@ const EmployeeReportList = () => {
 
   const handleDelete = async (id) => {
     try {
-      const response = await axios.post(`${process.env.REACT_APP_API_URL}/deleteReport/${id}`);
+      const response = await axios.post(
+        `${process.env.REACT_APP_API_URL}/deleteReport/${id}`
+      );
       if (response.data.status === "Success") {
         alert("Record deleted successfully");
         // Optionally, you could update the state or refresh the table
@@ -152,7 +167,7 @@ const EmployeeReportList = () => {
 
   const handleSaveEvaluationReview = async (id) => {
     const evaluation = evaluations[id] || "";
-    let review = teamLeaderReviews[id] || "";   // <-- use let here
+    let review = teamLeaderReviews[id] || ""; // <-- use let here
 
     if (typeof review === "object" && review !== null) {
       const projectKeys = Object.keys(review);
@@ -165,7 +180,10 @@ const EmployeeReportList = () => {
     }
     try {
       const payload = { id, evaluation, review };
-      const response = await axios.post(`${process.env.REACT_APP_API_URL}/post_emp_report`, payload);
+      const response = await axios.post(
+        `${process.env.REACT_APP_API_URL}/post_emp_report`,
+        payload
+      );
       if (response.data.status === "Success") {
         alert("Evaluation and Review saved successfully");
         fetchReportData(); // Refresh after save to update data
@@ -180,22 +198,49 @@ const EmployeeReportList = () => {
 
   return (
     <div className="container mx-auto">
-      <h5 className="text-lg font-semibold mb-2 text-center text-blue-900">Employee Report</h5>
-      <div data-rangepicker className="my-4 flex flex-col sm:flex-row items-center">
+      <h5 className="text-lg font-semibold mb-2 text-center text-blue-900">
+        Employee Report
+      </h5>
+      <div
+        data-rangepicker
+        className="my-4 flex flex-col sm:flex-row items-center"
+      >
         <div className="flex flex-col sm:flex-row">
           <label htmlFor="fromDate" className="mr-2 text-sm text-gray-700">
             Start Date:
           </label>
-          <input type="date" name="fromDate" value={fromDate} onChange={handleDateChange} max={today} className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-indigo-500 focus:border-indigo-500 block w-full p-2.5 mr-2" style={{ width: "200px" }} />
+          <input
+            type="date"
+            name="fromDate"
+            value={fromDate}
+            onChange={handleDateChange}
+            max={today}
+            className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-indigo-500 focus:border-indigo-500 block w-full p-2.5 mr-2"
+            style={{ width: "200px" }}
+          />
           <label htmlFor="toDate" className="mr-2 text-sm text-gray-700">
             End Date:
           </label>
-          <input type="date" name="toDate" value={toDate} onChange={handleDateChange} max={today} className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-indigo-500 focus:border-indigo-500 block w-full p-2.5 mr-2" style={{ width: "200px" }} />
+          <input
+            type="date"
+            name="toDate"
+            value={toDate}
+            onChange={handleDateChange}
+            max={today}
+            className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-indigo-500 focus:border-indigo-500 block w-full p-2.5 mr-2"
+            style={{ width: "200px" }}
+          />
           <div className="flex items-center">
             <label htmlFor="employee" className="mr-2 text-sm text-gray-700">
               Select Employee:
             </label>
-            <select id="employee" className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-indigo-500 focus:border-indigo-500 block p-2.5" style={{ width: "240px" }} value={selectedEmployee} onChange={(e) => setSelectedEmployee(e.target.value)}>
+            <select
+              id="employee"
+              className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-indigo-500 focus:border-indigo-500 block p-2.5"
+              style={{ width: "240px" }}
+              value={selectedEmployee}
+              onChange={(e) => setSelectedEmployee(e.target.value)}
+            >
               <option value="All">All</option>
               {employeeList.map((emp) => (
                 <option key={emp.employeeId} value={emp.employeeId}>
@@ -207,7 +252,9 @@ const EmployeeReportList = () => {
         </div>
       </div>
 
-      {userType === "Admin" || userType === "developerAdmin" || designation === "Sr. Technical Head" ? (
+      {userType === "Admin" ||
+      userType === "developerAdmin" ||
+      designation === "Sr. Technical Head" ? (
         <div className="my-5">
           {reportData.length > 0 ? (
             <div className="table-container">
@@ -232,106 +279,188 @@ const EmployeeReportList = () => {
 
                     return reportData.map((reportItem, reportIndex) => {
                       const reportDetails = reportItem.reportDetails || [];
-                      const createdAt = reportItem.created_at ? moment(reportItem.created_at).format("HH:mm A") : "N/A";
+                      const createdAt = reportItem.created_at
+                        ? moment(reportItem.created_at).format("HH:mm A")
+                        : "N/A";
 
-                      const totalSubCategories = reportDetails.reduce((acc, detailItem) => acc + (detailItem.subCategory?.length || 0), 0);
+                      const totalSubCategories = reportDetails.reduce(
+                        (acc, detailItem) =>
+                          acc + (detailItem.subCategory?.length || 0),
+                        0
+                      );
 
                       let hasRenderedMainCells = false;
 
-                      return reportDetails.flatMap((detailItem, detailIndex) => {
-                        const subcategories = detailItem.subCategory || [];
+                      return reportDetails.flatMap(
+                        (detailItem, detailIndex) => {
+                          const subcategories = detailItem.subCategory || [];
 
-                        return subcategories.map((subCategoryItem, subCatIndex) => {
-                          const isFirstRow = !hasRenderedMainCells;
-                          const row = (
-                            <tr key={`${reportItem.id}-${detailIndex}-${subCatIndex}`} className="bg-white border-b hover:bg-gray-50">
-                              {isFirstRow && (
-                                <>
-                                  <td className="border px-6 py-4" rowSpan={totalSubCategories}>
-                                    {reportIndex + 1}
+                          return subcategories.map(
+                            (subCategoryItem, subCatIndex) => {
+                              const isFirstRow = !hasRenderedMainCells;
+                              const row = (
+                                <tr
+                                  key={`${reportItem.id}-${detailIndex}-${subCatIndex}`}
+                                  className="bg-white border-b hover:bg-gray-50"
+                                >
+                                  {isFirstRow && (
+                                    <>
+                                      <td
+                                        className="border px-6 py-4"
+                                        rowSpan={totalSubCategories}
+                                      >
+                                        {reportIndex + 1}
+                                      </td>
+                                      <td
+                                        className="border px-6 py-4"
+                                        rowSpan={totalSubCategories}
+                                      >
+                                        {reportItem.reportDate}
+                                      </td>
+                                      <td
+                                        className="border px-6 py-4"
+                                        rowSpan={totalSubCategories}
+                                      >
+                                        {createdAt}
+                                      </td>
+                                      <td
+                                        className="border px-6 py-4"
+                                        rowSpan={totalSubCategories}
+                                      >
+                                        {reportItem.name || "N/A"}
+                                      </td>
+                                    </>
+                                  )}
+
+                                  {subCatIndex === 0 && (
+                                    <td
+                                      className="border px-6 py-4"
+                                      rowSpan={subcategories.length}
+                                    >
+                                      {detailItem.projectName || "N/A"}
+                                    </td>
+                                  )}
+
+                                  <td className="border px-6 py-4">
+                                    {subCategoryItem.subCategoryName || "N/A"}
                                   </td>
-                                  <td className="border px-6 py-4" rowSpan={totalSubCategories}>
-                                    {reportItem.reportDate}
+                                  <td className="border px-6 py-4">
+                                    {subCategoryItem.report ||
+                                      "No report available."}
                                   </td>
-                                  <td className="border px-6 py-4" rowSpan={totalSubCategories}>
-                                    {createdAt}
+
+                                  {/* Admin Review */}
+                                  <td className="border px-6 py-4">
+                                    {userType === "Employee" ? (
+                                      <div className="border rounded p-1 bg-gray-100">
+                                        {reportItem.evaluation ||
+                                          "No admin review available."}
+                                      </div>
+                                    ) : (
+                                      <input
+                                        type="text"
+                                        value={
+                                          evaluations?.[reportItem.id]?.[
+                                            detailItem.projectName
+                                          ]?.[
+                                            subCategoryItem.subCategoryName
+                                          ] || ""
+                                        }
+                                        onChange={(e) => {
+                                          const updated = { ...evaluations };
+                                          if (!updated[reportItem.id])
+                                            updated[reportItem.id] = {};
+                                          if (
+                                            !updated[reportItem.id][
+                                              detailItem.projectName
+                                            ]
+                                          )
+                                            updated[reportItem.id][
+                                              detailItem.projectName
+                                            ] = {};
+                                          updated[reportItem.id][
+                                            detailItem.projectName
+                                          ][subCategoryItem.subCategoryName] =
+                                            e.target.value;
+                                          setEvaluations(updated);
+                                        }}
+                                        className="border rounded p-1"
+                                        placeholder="Add Admin Review"
+                                      />
+                                    )}
                                   </td>
-                                  <td className="border px-6 py-4" rowSpan={totalSubCategories}>
-                                    {reportItem.name || "N/A"}
+
+                                  {/* Team Leader Review */}
+                                  <td className="border px-6 py-4">
+                                    {userType === "Admin" ? (
+                                      <div>
+                                        {reportItem.review ||
+                                          "No review available"}
+                                      </div>
+                                    ) : (
+                                      <input
+                                        type="text"
+                                        value={
+                                          teamLeaderReviews?.[reportItem.id]?.[
+                                            detailItem.projectName
+                                          ]?.[
+                                            subCategoryItem.subCategoryName
+                                          ] || ""
+                                        }
+                                        onChange={(e) => {
+                                          const value = e.target.value;
+
+                                          // safely update nested state using functional update
+                                          setTeamLeaderReviews((prev) => ({
+                                            ...prev,
+                                            [reportItem.id]: {
+                                              ...(prev[reportItem.id] || {}),
+                                              [detailItem.projectName]: {
+                                                ...(prev[reportItem.id]?.[
+                                                  detailItem.projectName
+                                                ] || {}),
+                                                [subCategoryItem.subCategoryName]:
+                                                  value,
+                                              },
+                                            },
+                                          }));
+                                        }}
+                                        className="border rounded p-1 focus:outline-none focus:ring-1 focus:ring-blue-400"
+                                        placeholder="Add Team Leader Review"
+                                      />
+                                    )}
                                   </td>
-                                </>
-                              )}
 
-                              {subCatIndex === 0 && (
-                                <td className="border px-6 py-4" rowSpan={subcategories.length}>
-                                  {detailItem.projectName || "N/A"}
-                                </td>
-                              )}
+                                  <td className="border px-6 py-4">
+                                    <button
+                                      onClick={() =>
+                                        handleSaveEvaluationReview(
+                                          reportItem.id
+                                        )
+                                      }
+                                      className="bg-blue-500 text-white px-2 rounded"
+                                    >
+                                      Save
+                                    </button>
+                                  </td>
+                                </tr>
+                              );
 
-                              <td className="border px-6 py-4">{subCategoryItem.subCategoryName || "N/A"}</td>
-                              <td className="border px-6 py-4">{subCategoryItem.report || "No report available."}</td>
-
-                              {/* Admin Review */}
-                              <td className="border px-6 py-4">
-                                {userType === "Employee" ? (
-                                  <div className="border rounded p-1 bg-gray-100">{reportItem.evaluation || "No admin review available."}</div>
-                                ) : (
-                                  <input
-                                    type="text"
-                                    value={evaluations?.[reportItem.id]?.[detailItem.projectName]?.[subCategoryItem.subCategoryName] || ""}
-                                    onChange={(e) => {
-                                      const updated = { ...evaluations };
-                                      if (!updated[reportItem.id]) updated[reportItem.id] = {};
-                                      if (!updated[reportItem.id][detailItem.projectName]) updated[reportItem.id][detailItem.projectName] = {};
-                                      updated[reportItem.id][detailItem.projectName][subCategoryItem.subCategoryName] = e.target.value;
-                                      setEvaluations(updated);
-                                    }}
-                                    className="border rounded p-1"
-                                    placeholder="Add Admin Review"
-                                  />
-                                )}
-                              </td>
-
-                              {/* Team Leader Review */}
-                              <td className="border px-6 py-4">
-                                {userType === "Admin" ? (
-                                  <div>{reportItem.review || "No review available"}</div>
-                                ) : (
-                                  <input
-                                    type="text"
-                                    value={teamLeaderReviews?.[reportItem.id]?.[detailItem.projectName]?.[subCategoryItem.subCategoryName] || ""}
-                                    onChange={(e) => {
-                                      const updated = { ...teamLeaderReviews };
-                                      if (!updated[reportItem.id]) updated[reportItem.id] = {};
-                                      if (!updated[reportItem.id][detailItem.projectName]) updated[reportItem.id][detailItem.projectName] = {};
-                                      updated[reportItem.id][detailItem.projectName][subCategoryItem.subCategoryName] = e.target.value;
-                                      setTeamLeaderReviews(updated);
-                                    }}
-                                    className="border rounded p-1"
-                                    placeholder="Add Team Leader Review"
-                                  />
-                                )}
-                              </td>
-
-                              <td className="border px-6 py-4">
-                                <button onClick={() => handleSaveEvaluationReview(reportItem.id)} className="bg-blue-500 text-white px-2 rounded">
-                                  Save
-                                </button>
-                              </td>
-                            </tr>
+                              hasRenderedMainCells = true;
+                              return row;
+                            }
                           );
-
-                          hasRenderedMainCells = true;
-                          return row;
-                        });
-                      });
+                        }
+                      );
                     });
                   })()}
                 </tbody>
               </table>
             </div>
           ) : (
-            <p className="text-gray-500">No reports found for the selected date range.</p>
+            <p className="text-gray-500">
+              No reports found for the selected date range.
+            </p>
           )}
         </div>
       ) : (
@@ -368,7 +497,10 @@ const EmployeeReportList = () => {
                     </th>{" "}
                     {/* Team Leader Review Column */}
                     {userType === "employee" && (
-                      <th className="border px-4 py-2" style={{ width: "50px" }}>
+                      <th
+                        className="border px-4 py-2"
+                        style={{ width: "50px" }}
+                      >
                         Delete
                       </th>
                     )}
@@ -378,53 +510,106 @@ const EmployeeReportList = () => {
                   {(() => {
                     let serialNo = 1; // Serial number counter
                     return reportData.map((dateItem, dateIndex) => {
-                      const reportDate = moment(dateItem.reportDate, "DD-MMM-YYYY").format("DD-MM-YYYY"); // Formatting date
+                      const reportDate = moment(
+                        dateItem.reportDate,
+                        "DD-MMM-YYYY"
+                      ).format("DD-MM-YYYY"); // Formatting date
                       const reportDetails = dateItem.reportDetails || [];
                       return (
                         <React.Fragment key={dateIndex}>
                           {reportDetails.map((detailItem, detailIndex) => {
                             const subcategories = detailItem.subCategory || [];
-                            return subcategories.map((subCategoryItem, subCatIndex) => (
-                              <tr key={subCatIndex} className="bg-white border-b hover:bg-gray-50">
-                                {subCatIndex === 0 && detailIndex === 0 && (
-                                  <>
-                                    {/* Serial Number */}
-                                    <td className="border px-6 py-4" rowSpan={reportDetails.reduce((acc, curr) => acc + curr.subCategory.length, 0)}>
-                                      {serialNo++}
+                            return subcategories.map(
+                              (subCategoryItem, subCatIndex) => (
+                                <tr
+                                  key={subCatIndex}
+                                  className="bg-white border-b hover:bg-gray-50"
+                                >
+                                  {subCatIndex === 0 && detailIndex === 0 && (
+                                    <>
+                                      {/* Serial Number */}
+                                      <td
+                                        className="border px-6 py-4"
+                                        rowSpan={reportDetails.reduce(
+                                          (acc, curr) =>
+                                            acc + curr.subCategory.length,
+                                          0
+                                        )}
+                                      >
+                                        {serialNo++}
+                                      </td>
+                                      {/* Report Date */}
+                                      <td
+                                        className="border px-6 py-4"
+                                        rowSpan={reportDetails.reduce(
+                                          (acc, curr) =>
+                                            acc + curr.subCategory.length,
+                                          0
+                                        )}
+                                      >
+                                        {reportDate}
+                                      </td>
+                                      {/* Report Time - Created At */}
+                                      <td
+                                        className="border px-6 py-4"
+                                        rowSpan={reportDetails.reduce(
+                                          (acc, curr) =>
+                                            acc + curr.subCategory.length,
+                                          0
+                                        )}
+                                      >
+                                        {dateItem.reportTime
+                                          ? dateItem.reportTime
+                                          : "N/A"}
+                                      </td>
+                                    </>
+                                  )}
+                                  {/* Project Name */}
+                                  {subCatIndex === 0 && (
+                                    <td
+                                      className="border px-6 py-4"
+                                      rowSpan={subcategories.length}
+                                    >
+                                      {detailItem.projectName || "N/A"}
                                     </td>
-                                    {/* Report Date */}
-                                    <td className="border px-6 py-4" rowSpan={reportDetails.reduce((acc, curr) => acc + curr.subCategory.length, 0)}>
-                                      {reportDate}
-                                    </td>
-                                    {/* Report Time - Created At */}
-                                    <td className="border px-6 py-4" rowSpan={reportDetails.reduce((acc, curr) => acc + curr.subCategory.length, 0)}>
-                                      {dateItem.reportTime ? dateItem.reportTime : "N/A"}
-                                    </td>
-                                  </>
-                                )}
-                                {/* Project Name */}
-                                {subCatIndex === 0 && (
-                                  <td className="border px-6 py-4" rowSpan={subcategories.length}>
-                                    {detailItem.projectName || "N/A"}
+                                  )}
+                                  {/* Subcategory */}
+                                  <td className="border px-6 py-4">
+                                    {subCategoryItem.subCategoryName || "N/A"}
                                   </td>
-                                )}
-                                {/* Subcategory */}
-                                <td className="border px-6 py-4">{subCategoryItem.subCategoryName || "N/A"}</td>
-                                {/* Report */}
-                                <td className="border px-6 py-4">{subCategoryItem.report || "No report available."}</td>
-                                {/* Admin Review (Read-only for Employee) */}
-                                <td className="border px-6 py-4">{dateItem.review || "No admin review available."}</td>
-                                {/* Team Leader Review (Read-only for Employee) */}
-                                <td className="border px-6 py-4">{dateItem.evaluation || "No team leader review available."}</td>
-                                {userType === "employee" && moment(reportDate, "DD-MM-YYYY").isSame(moment(), "day") && (
-                                  <td className="px-4 py-3">
-                                    <button onClick={() => handleDelete(dateItem.id)}>
-                                      <FontAwesomeIcon icon={faTrash} />
-                                    </button>
+                                  {/* Report */}
+                                  <td className="border px-6 py-4">
+                                    {subCategoryItem.report ||
+                                      "No report available."}
                                   </td>
-                                )}
-                              </tr>
-                            ));
+                                  {/* Admin Review (Read-only for Employee) */}
+                                  <td className="border px-6 py-4">
+                                    {dateItem.review ||
+                                      "No admin review available."}
+                                  </td>
+                                  {/* Team Leader Review (Read-only for Employee) */}
+                                  <td className="border px-6 py-4">
+                                    {dateItem.evaluation ||
+                                      "No team leader review available."}
+                                  </td>
+                                  {userType === "employee" &&
+                                    moment(reportDate, "DD-MM-YYYY").isSame(
+                                      moment(),
+                                      "day"
+                                    ) && (
+                                      <td className="px-4 py-3">
+                                        <button
+                                          onClick={() =>
+                                            handleDelete(dateItem.id)
+                                          }
+                                        >
+                                          <FontAwesomeIcon icon={faTrash} />
+                                        </button>
+                                      </td>
+                                    )}
+                                </tr>
+                              )
+                            );
                           })}
                         </React.Fragment>
                       );
@@ -434,20 +619,32 @@ const EmployeeReportList = () => {
               </table>
             </div>
           ) : (
-            <p className="text-gray-500">No reports found for the selected date range.</p>
+            <p className="text-gray-500">
+              No reports found for the selected date range.
+            </p>
           )}
         </div>
       )}
 
       {/* Pagination */}
       <div className="flex justify-between items-center mt-4">
-        <button onClick={() => handlePageChange(page > 1 ? page - 1 : 1)} disabled={page === 1} className="bg-blue-500 text-white px-4 py-2 rounded-md disabled:opacity-50">
+        <button
+          onClick={() => handlePageChange(page > 1 ? page - 1 : 1)}
+          disabled={page === 1}
+          className="bg-blue-500 text-white px-4 py-2 rounded-md disabled:opacity-50"
+        >
           Previous
         </button>
         <span>
           Page {page} of {totalPages}
         </span>
-        <button onClick={() => handlePageChange(page < totalPages ? page + 1 : totalPages)} disabled={page === totalPages} className="bg-blue-500 text-white px-4 py-2 rounded-md disabled:opacity-50">
+        <button
+          onClick={() =>
+            handlePageChange(page < totalPages ? page + 1 : totalPages)
+          }
+          disabled={page === totalPages}
+          className="bg-blue-500 text-white px-4 py-2 rounded-md disabled:opacity-50"
+        >
           Next
         </button>
       </div>

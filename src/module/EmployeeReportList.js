@@ -759,14 +759,14 @@ const EmployeeReportList = () => {
 
   return (
     <div className="container mx-auto">
-      <h5 className="text-lg font-semibold mb-2 text-center text-blue-900">
+      <h5 className="text-xl font-semibold mb-2 text-center text-blue-900">
         Employee Report
       </h5>
       <div
         data-rangepicker
         className="my-4 flex flex-col sm:flex-row items-center"
       >
-        <div className="flex items-center sm:flex-row">
+        <div className="flex items-center sm:flex-row justify-center w-full flex-wrap gap-y-2">
           <label htmlFor="fromDate" className="mr-2 text-sm text-gray-700">
             Start Date:
           </label>
@@ -776,7 +776,7 @@ const EmployeeReportList = () => {
             value={fromDate}
             onChange={handleDateChange}
             max={today}
-            className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-indigo-500 focus:border-indigo-500 block w-full p-2.5 mr-2"
+            className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-indigo-500 focus:border-indigo-500 block w-full p-2.5 mr-4"
             style={{ width: "200px" }}
           />
           <label htmlFor="toDate" className="mr-2 text-sm text-gray-700">

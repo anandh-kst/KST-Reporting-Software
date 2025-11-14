@@ -3,6 +3,10 @@ import axios from "axios";
 import { useNavigate } from "react-router-dom";
 import { useSelector } from "react-redux";
 import moment from "moment";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faPlus } from "@fortawesome/free-solid-svg-icons";
+import { Height } from "@mui/icons-material";
+
 
 const ProjectAssignList = () => {
   const navigate = useNavigate();
@@ -22,6 +26,7 @@ const ProjectAssignList = () => {
   const [isAllowedTime, setIsAllowedTime] = useState(false);
   const [allAssignments, setAllAssignments] = useState([]);
   const [rules, setRulesResponse] = useState({});
+  
 
   useEffect(() => {
     fetchEmployees();
@@ -171,22 +176,26 @@ const ProjectAssignList = () => {
       boxShadow: "0 0 12px rgba(0, 0, 0, 0.05)",
     },
     filters: {
+      width:"100%",
       display: "flex",
+      justifyContent: "center",
       flexWrap: "wrap",
-      gap: "8px",
+      gap: "20px",
       marginBottom: "20px",
       background: "#f9fafb",
-      padding: "18px 20px",
+      padding: "35px 20px",
       borderRadius: "8px",
-      border: "1px solid #d1d5db",
-      boxShadow: "inset 0 1px 3px rgb(0 0 0 / 0.05)",
-      justifyContent: "left",
+     
+
+   
+
     },
 
     filterItem: {
       display: "flex",
       flexDirection: "column",
       minWidth: "180px",
+      Height:"20px"
     },
     label: {
       fontWeight: "600",
@@ -194,7 +203,7 @@ const ProjectAssignList = () => {
       color: "#4b5563",
     },
     input: {
-      padding: "6px 10px",
+      padding: "10px 10px",
       fontSize: "14px",
       border: "1px solid #cbd5e1",
       borderRadius: "6px",
@@ -222,15 +231,15 @@ const ProjectAssignList = () => {
   };
 
   return (
-    <div className="bg-white min-h-screen">
-      <div className="flex justify-end items-baseline">
-        <div>
+    <div className="bg-gray-200 min-h-screen relative px-4 py-4 rounded-md">
+      <div className="flex justify-end items-baseline ">
+        <div className="fixed bottom-8 right-4">
           <button onClick={() => (isAdmin ? navigate("/dashboard/project-assign") : navigate("/dashboard/project-assign"))} disabled={!isAllowedTime && !isAdmin} className={`px-6 py-3 rounded-xl transition-all ${isAdmin ? "bg-blue-600 text-white hover:bg-blue-700" : isAllowedTime ? "bg-blue-600 text-white hover:bg-blue-700" : "bg-gray-400 text-white cursor-not-allowed"}`}>
-            {isAdmin ? "Assign Project" : "Assign Task"}
+           <FontAwesomeIcon icon={faPlus} className="mr-2" /> {isAdmin ? "Assign Project" : "Assign Task"}
           </button>
         </div>
       </div>
-      {!isAdmin && !isAllowedTime && <p className="text-red-600 text-sm text-right">Task assignment allowed only within 15 minutes of punch-in after {rules.officeStartTime} AM</p>}
+      {!isAdmin && !isAllowedTime && <p className="text-red-600 font-bold text-sm text-center py-2">* Task assignment allowed only within 15 minutes of punch-in after {rules.officeStartTime} AM</p>}
 
       {successMessage && <div className="bg-green-100 text-blue-800 p-4 rounded-xl shadow-md mb-6 text-lg text-center">{successMessage}</div>}
 
@@ -278,7 +287,7 @@ const ProjectAssignList = () => {
           </select>
         </div>
         <div className="flex flex-col justify-end">
-          <button onClick={fetchAssignments} className="bg-green-600 text-white px-3 py-2 text-sm rounded-lg hover:bg-green-700 transition-all">
+          <button onClick={fetchAssignments} className="bg-green-600 text-white px-6 py-3 text-base rounded-lg hover:bg-green-700 transition-all">
             Filter
           </button>
         </div>

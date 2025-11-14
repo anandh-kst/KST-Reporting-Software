@@ -291,8 +291,8 @@ const LeaveApplications = () => {
   if (loading) return <div style={styles.loading}>Loading...</div>;
 
   return (
-    <div className="p-6">
-      <h1 className="text-4xl font-bold text-center text-black mb-6">
+    <div className="p-6 bg-gray-200 rounded-md">
+      <h1 className="text-2xl font-bold text-center text-black mb-6">
         Leave Status
       </h1>
 

@@ -704,9 +704,9 @@ const ProjectList = () => {
   };
 
   return (
-    <div className="p-6 bg-gradient-to-r from-white to-white min-h-screen">
-      <h2 className="text-4xl font-bold text-center text-black mb-6">
-        Project List
+    <div className="p-6 bg-gradient-to-r from-white to-white min-h-screen relative">
+      <h2 className="text-2xl font-bold text-center text-black mb-6">
+       -- Project List --
       </h2>
 
       {(showForm || location.pathname === "/dashboard/projects/add") && (
@@ -736,7 +736,7 @@ const ProjectList = () => {
         <div className="flex justify-end mb-6">
           <button
             onClick={() => navigate("/dashboard/projects/add")}
-            className="bg-blue-600 text-white px-6 py-3 rounded-xl transition-all hover:bg-blue-700"
+            className="bg-blue-600 text-white px-6 py-3 rounded-xl transition-all hover:bg-blue-700 fixed bottom-8 z-10 right-4"
           >
             Add New Project
           </button>
@@ -933,7 +933,9 @@ const ProjectList = () => {
                   </div>
                   <div>
                     <span className="font-semibold">Email:</span>{" "}
-                    {project.contactDetails[0]?.mail_id}
+                    {project.contactDetails[0]?.mail_id.length > 20
+                      ? project.contactDetails[0]?.mail_id.slice(0, 20) + "..."
+                      : project.contactDetails[0]?.mail_id}
                   </div>
                 </div>
 
@@ -974,7 +976,9 @@ const ProjectList = () => {
                             </div>
                             <div>
                               <span className="font-semibold">Email:</span>{" "}
-                              {contact.mail_id}
+                              {contact.mail_id.length > 20
+                                ? contact.mail_id.slice(0, 20) + "..."
+                                : contact.mail_id}
                             </div>
                           </div>
                         ))}

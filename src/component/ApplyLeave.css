@@ -1,12 +1,9 @@
 /* Container styling */
-.apply-leave-container {
-  background-color: #f9f9f9;
-  /* min-height: 100vh; */
-}
+
 
 /* Card design */
 .apply-leave-card {
-  background: #ffffff;
+ 
   padding: 40px;
   border-radius: 16px;
 /* height: 100vh; */

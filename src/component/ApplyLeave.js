@@ -186,7 +186,7 @@ const ApplyLeave = () => {
   };
 
   return (
-    <div className="apply-leave-container">
+    <div className="apply-leave-container bg-gray-200 rounded-md">
       <div className="apply-leave-card">
         <h2 className="text-sm font-bold text-center text-black mb-16">
           - - Apply for Leave - -
