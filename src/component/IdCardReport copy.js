@@ -46,7 +46,6 @@ const NumberInputField = ({ label, handleInputChange }) => {
     </div>
   );
 };
-
 const IdCardReport = () => {
   const { employeeId } = useSelector((state) => state.login.userData);
   const [formData, setFormData] = useState({

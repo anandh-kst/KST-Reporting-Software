@@ -50,15 +50,6 @@ const EmployeeReportList = () => {
     };
     fetchEmployeeList();
   }, []);
-function isJson(str) {
-  if (typeof str !== "string") return false;
-  try {
-    JSON.parse(str);
-    return true;
-  } catch {
-    return false;
-  }
-}
 
   const fetchReportData = async () => {
     try {
@@ -175,30 +166,33 @@ function isJson(str) {
       alert("An error occurred while deleting the record");
     }
   };
-
-  const handleSaveEvaluationReview = async (id) => {
-    const evaluation = evaluations[id] || "";
-    let review = teamLeaderReviews[id] || ""; // <-- use let here
-
-    if (typeof review === "object" && review !== null) {
-      const projectKeys = Object.keys(review);
-      if (projectKeys.length > 0) {
-        const subKeys = Object.keys(review[projectKeys[0]]);
-        if (subKeys.length > 0) {
-          review = review[projectKeys[0]][subKeys[0]]; // now safe
-        }
+  const getReviewAndEvaluation = (r) => {
+    if (typeof r === "string") {
+      try {
+        r = JSON.parse(r);
+      } catch {
+        return r;
       }
     }
+    return r || "";
+  };
+  const handleSaveEvaluationReview = async (id) => {
+    const evaluation = evaluations[id] || "";
+
+    // Always send the full nested structure — do NOT flatten
+    const review = teamLeaderReviews[id] || {};
+
     try {
       const payload = { id, evaluation, review };
+
       const response = await axios.post(
         `${process.env.REACT_APP_API_URL}/post_emp_report`,
         payload
       );
+
       if (response.data.status === "Success") {
-        console.log(response.data);
         alert("Evaluation and Review saved successfully");
-        fetchReportData(); // Refresh after save to update data
+        fetchReportData();
       } else {
         alert("Failed to save Evaluation and Review.");
       }
@@ -215,9 +209,9 @@ function isJson(str) {
       </h5>
       <div
         data-rangepicker
-        className="my-4 flex flex-col sm:flex-row items-center"
+        className="my-4 flex flex-col sm:flex-row items-center  gap-4"
       >
-        <div className="flex flex-col sm:flex-row">
+        <div className="flex flex-col sm:flex-row items-center ">
           <label htmlFor="fromDate" className="mr-2 text-sm text-gray-700">
             Start Date:
           </label>
@@ -242,7 +236,7 @@ function isJson(str) {
             className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-indigo-500 focus:border-indigo-500 block w-full p-2.5 mr-2"
             style={{ width: "200px" }}
           />
-          <div className="flex items-center">
+          <div className="flex items-center flex-wrap justify-center">
             <label htmlFor="employee" className="mr-2 text-sm text-gray-700">
               Select Employee:
             </label>
@@ -365,16 +359,19 @@ function isJson(str) {
                                   <td className="border px-6 py-4">
                                     {userType === "Employee" ? (
                                       <div className="border rounded p-1 bg-gray-100">
-                                        {reportItem.evaluation ||
-                                          "No admin review available."}
+                                        {getReviewAndEvaluation(
+                                          reportItem.evaluation
+                                        )?.[detailItem.projectName]?.[
+                                          subCategoryItem.subCategoryName
+                                        ] || "No admin review available."}
                                       </div>
                                     ) : (
                                       <input
                                         type="text"
                                         value={
-                                          evaluations?.[reportItem.id]?.[
-                                            detailItem.projectName
-                                          ]?.[
+                                          getReviewAndEvaluation(
+                                            reportItem.evaluation
+                                          )?.[detailItem.projectName]?.[
                                             subCategoryItem.subCategoryName
                                           ] || ""
                                         }
@@ -405,26 +402,32 @@ function isJson(str) {
                                   <td className="border px-6 py-4">
                                     {userType === "Admin" ? (
                                       <div>
-                                        {reportItem.review ||
-                                          "No review available"}
+                                        {getReviewAndEvaluation(
+                                          reportItem.review
+                                        )?.[detailItem.projectName]?.[
+                                          subCategoryItem.subCategoryName
+                                        ] || "No review available"}
                                       </div>
                                     ) : (
                                       <input
                                         type="text"
-                                        defaultValue={
-                                          reportItem.review || ""
+                                        disabled={
+                                          getReviewAndEvaluation(
+                                            reportItem.review
+                                          )?.[detailItem.projectName]?.[
+                                            subCategoryItem.subCategoryName
+                                          ]? true : false
                                         }
-                                        // value={
-                                        //   teamLeaderReviews?.[reportItem.id]?.[
-                                        //     detailItem.projectName
-                                        //   ]?.[
-                                        //     subCategoryItem.subCategoryName
-                                        //   ] || ""
-                                        // }
+                                        defaultValue={
+                                          getReviewAndEvaluation(
+                                            reportItem.review
+                                          )?.[detailItem.projectName]?.[
+                                            subCategoryItem.subCategoryName
+                                          ] || ""
+                                        }
                                         onChange={(e) => {
                                           const value = e.target.value;
-                                          
-                                          // safely update nested state using functional update
+
                                           setTeamLeaderReviews((prev) => ({
                                             ...prev,
                                             [reportItem.id]: {

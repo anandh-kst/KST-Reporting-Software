@@ -493,6 +493,16 @@ const EmployeeReportList = () => {
     };
     fetchEmployeeList();
   }, []);
+  const getReviewAndEvaluation = (r) => {
+    if (typeof r === "string") {
+      try {
+        r = JSON.parse(r);
+      } catch {
+        return r;
+      }
+    }
+    return r || "";
+  };
   function safeParse(value) {
     // Case 1: Already object → return as-is
     if (typeof value === "object" && value !== null) return value;
@@ -951,20 +961,20 @@ const EmployeeReportList = () => {
                                     <input
                                       type="text"
                                       disabled={
-                                        reportItem.evaluation?.[
-                                          subCategoryItem.projectName
-                                        ]?.[
-                                          subCategoryItem.subCategory
-                                            .subCategoryName
+                                        getReviewAndEvaluation(
+                                          reportItem.evaluation
+                                        )?.[detailItem.projectName]?.[
+                                          subCategoryItem.subCategoryName
                                         ]
                                           ? true
                                           : false
                                       }
-                                      value={
-                                        evaluations?.[reportItem.id]?.[
-                                          detailItem.projectName
-                                        ]?.[subCategoryItem.subCategoryName] ||
-                                        ""
+                                      defaultValue={
+                                        getReviewAndEvaluation(
+                                          reportItem.evaluation
+                                        )?.[detailItem.projectName]?.[
+                                          subCategoryItem.subCategoryName
+                                        ] || ""
                                       }
                                       onChange={(e) => {
                                         const updated = { ...evaluations };
@@ -992,20 +1002,20 @@ const EmployeeReportList = () => {
                                     <input
                                       type="text"
                                       disabled={
-                                        reportItem.review?.[
-                                          subCategoryItem.projectName
-                                        ]?.[
-                                          subCategoryItem.subCategory
-                                            .subCategoryName
+                                        getReviewAndEvaluation(
+                                          reportItem.review
+                                        )?.[detailItem.projectName]?.[
+                                          subCategoryItem.subCategoryName
                                         ]
                                           ? true
                                           : false
                                       }
-                                      value={
-                                        teamLeaderReviews?.[reportItem.id]?.[
-                                          detailItem.projectName
-                                        ]?.[subCategoryItem.subCategoryName] ||
-                                        ""
+                                      defaultValue={
+                                        getReviewAndEvaluation(
+                                          reportItem.review
+                                        )?.[detailItem.projectName]?.[
+                                          subCategoryItem.subCategoryName
+                                        ] || ""
                                       }
                                       onChange={(e) => {
                                         const updated = {
@@ -1174,11 +1184,16 @@ const EmployeeReportList = () => {
                                       "No report available."}
                                   </td>
                                   <td className="border px-6 py-4">
-                                    {dateItem.evaluation ||
-                                      "No admin review available."}
+                                    {getReviewAndEvaluation(
+                                      dateItem.evaluation
+                                    )?.[detailItem.projectName]?.[
+                                      subCategoryItem.subCategoryName
+                                    ] || "No admin review available."}
                                   </td>
                                   <td className="border px-6 py-4">
-                                    {dateItem.review ||
+                                    {getReviewAndEvaluation(dateItem.review)?.[
+                                      detailItem.projectName
+                                    ]?.[subCategoryItem.subCategoryName] ||
                                       "No team leader review available."}
                                   </td>
                                   {userType === "employee" &&
