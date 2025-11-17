@@ -2661,7 +2661,6 @@ const EmployeeMaster = () => {
             method: "POST",
             headers: { "Content-Type": "application/json" },
            body: JSON.stringify({ date: displayDate.format("YYYY-MM-DD") }),
-            // body: JSON.stringify({ date: "2025-10-28" }),
           }
         );
 
@@ -2713,8 +2712,8 @@ const EmployeeMaster = () => {
   const fetchLeaveApprovels= async()=>{
       try{
         const res= await axios.post(`${process.env.REACT_APP_API_URL}/attendanceSummary`,
-          //{date: displayDate.format("YYYY-MM-DD")}
-        {date: "2025-10-28"}
+        {date: displayDate.format("YYYY-MM-DD")}
+      
         );
         const result =res.data;
        setApprovedLeaved(result.data["leaveApprovals"]);

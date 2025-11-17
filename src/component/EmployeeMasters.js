@@ -166,6 +166,7 @@ const MainSection = styled.div`
   display: flex;
   flex-direction: column;
   gap: 1.5rem;
+  overflow-x: auto;
 `;
 
 const SideSection = styled.div`
@@ -943,7 +944,64 @@ const EmployeeMaster = () => {
               {quote}
             </QuoteText>
           </WelcomeCard>
+           <div className="mt-6 w-full">
+            <div className="bg-white shadow-lg rounded-2xl overflow-hidden ">
+              <div className="px-6 py-5 border-b border-gray-200">
+                <h1 className="text-xl font-bold text-gray-800">Leave Status for {moment().format("MMMM")}</h1>
+              </div>
+              <div className="">
+              <div className="w-full px-4 py-5 overflow-x-auto inline-block ">
+                {filteredApplications.length > 0 ? (
+                  <table className="w-min-full text-sm text-gray-700 border border-gray-200 rounded-lg overflow-scroll">
+                    <thead className="bg-gray-100 text-xs text-gray-600 uppercase tracking-wider">
+                      <tr>
+                        <th className="px-4 py-2 text-left whitespace-nowrap">Leave Type</th>
+                        <th className="px-4 py-2 text-left">Status</th>
+                        <th className="px-4 py-2 text-left">From</th>
+                        <th className="px-4 py-2 text-left">To</th>
+                        <th className="px-4 py-2 text-left whitespace-nowrap">Leave Time</th>
+                        <th className="px-4 py-2 text-left">Days</th>
+                        <th className="px-4 py-2 text-left">Reason</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {filteredApplications.map((application, index) => (
+                        <tr key={index} className="border-t border-gray-200 hover:bg-gray-50 transition">
+                          <td className="px-4 py-3">{application.leaveTypes}</td>
+                          <td className="px-4 py-3">
+                            <span
+                              className={`text-sm font-semibold px-2 py-1 rounded-full inline-block
+                    ${application.status === "Pending" ? "bg-yellow-100 text-yellow-800" : application.status === "Accepted" ? "bg-green-100 text-green-800" : "bg-red-100 text-red-800"}`}
+                            >
+                              {application.status}
+                            </span>
+                          </td>
+                          <td className="px-4 py-3">{formatDate(application.startDate)}</td>
+                          <td className="px-4 py-3">{formatDate(application.endDate)}</td>
+                          <td className="px-4 py-3">{application.leaveTimes}</td>
+                          <td className="px-4 py-3">{application.noOfDays}</td>
+                          <td className="px-4 py-3">{application.reason}</td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                ) : (
+                  <div className="text-center text-gray-500 italic mt-4">No leave applications found for this month</div>
+                )}
+              </div>
+              </div>
 
+            </div>
+
+            {/* Optional animation keyframe */}
+            <style>{`
+    @keyframes blinkZoom {
+      0% { opacity: 0; transform: scale(1); }
+      50% { opacity: 1; transform: scale(1.2); }
+      100% { opacity: 0; transform: scale(1); }
+    }
+  `}</style>
+          </div>
           {/* <StatsCard>
             <div className="stats-row" style={{ justifyContent: "space-between" }}>
               <div>

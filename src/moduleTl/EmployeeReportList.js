@@ -50,6 +50,15 @@ const EmployeeReportList = () => {
     };
     fetchEmployeeList();
   }, []);
+function isJson(str) {
+  if (typeof str !== "string") return false;
+  try {
+    JSON.parse(str);
+    return true;
+  } catch {
+    return false;
+  }
+}
 
   const fetchReportData = async () => {
     try {
@@ -73,7 +82,7 @@ const EmployeeReportList = () => {
       if (status === "Success") {
         setTotalRecords(totalRecords);
         setReportData(data || []);
-
+        console.log(userData);
         if (userType === "Admin") {
           const employeeNames = [
             ...new Set(data.flatMap((report) => report.name)),
@@ -90,10 +99,12 @@ const EmployeeReportList = () => {
                 : dateItem.evaluation || {};
 
             existingTeamLeaderReviews[dateItem.id] =
-              typeof dateItem.teamLeaderReview === "string"
-                ? JSON.parse(dateItem.teamLeaderReview)
-                : dateItem.teamLeaderReview || {};
+              typeof dateItem.review === "string"
+                ? JSON.parse(dateItem.review)
+                : dateItem.review || {};
           });
+          console.log("existingEvaluations", existingEvaluations);
+          console.log("existingTeamLeaderReviews", existingTeamLeaderReviews);
           setEvaluations(existingEvaluations);
           setTeamLeaderReviews(existingTeamLeaderReviews);
         }
@@ -185,6 +196,7 @@ const EmployeeReportList = () => {
         payload
       );
       if (response.data.status === "Success") {
+        console.log(response.data);
         alert("Evaluation and Review saved successfully");
         fetchReportData(); // Refresh after save to update data
       } else {
@@ -389,7 +401,6 @@ const EmployeeReportList = () => {
                                       />
                                     )}
                                   </td>
-
                                   {/* Team Leader Review */}
                                   <td className="border px-6 py-4">
                                     {userType === "Admin" ? (
@@ -400,16 +411,19 @@ const EmployeeReportList = () => {
                                     ) : (
                                       <input
                                         type="text"
-                                        value={
-                                          teamLeaderReviews?.[reportItem.id]?.[
-                                            detailItem.projectName
-                                          ]?.[
-                                            subCategoryItem.subCategoryName
-                                          ] || ""
+                                        defaultValue={
+                                          reportItem.review || ""
                                         }
+                                        // value={
+                                        //   teamLeaderReviews?.[reportItem.id]?.[
+                                        //     detailItem.projectName
+                                        //   ]?.[
+                                        //     subCategoryItem.subCategoryName
+                                        //   ] || ""
+                                        // }
                                         onChange={(e) => {
                                           const value = e.target.value;
-
+                                          
                                           // safely update nested state using functional update
                                           setTeamLeaderReviews((prev) => ({
                                             ...prev,

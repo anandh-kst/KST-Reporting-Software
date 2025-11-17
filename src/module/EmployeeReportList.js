@@ -493,6 +493,27 @@ const EmployeeReportList = () => {
     };
     fetchEmployeeList();
   }, []);
+  function safeParse(value) {
+    // Case 1: Already object → return as-is
+    if (typeof value === "object" && value !== null) return value;
+
+    // Case 2: Not a string → return empty object
+    if (typeof value !== "string") return {};
+
+    const trimmed = value.trim();
+
+    // Case 3: String is plain (e.g., "Cool") → return string
+    if (!trimmed.startsWith("{") && !trimmed.startsWith("[")) {
+      return value;
+    }
+
+    // Case 4: Try JSON parse safely
+    try {
+      return JSON.parse(trimmed);
+    } catch {
+      return value; // fallback to plain string
+    }
+  }
 
   const fetchReportData = async () => {
     try {
@@ -532,10 +553,7 @@ const EmployeeReportList = () => {
                 ? JSON.parse(dateItem.evaluation)
                 : dateItem.evaluation || {};
 
-            existingTeamLeaderReviews[dateItem.id] =
-              typeof dateItem.teamLeaderReview === "string"
-                ? JSON.parse(dateItem.teamLeaderReview)
-                : dateItem.teamLeaderReview || {};
+            existingTeamLeaderReviews[dateItem.id] = safeParse(dateItem.review);
           });
           setEvaluations(existingEvaluations);
           setTeamLeaderReviews(existingTeamLeaderReviews);
@@ -584,6 +602,8 @@ const EmployeeReportList = () => {
     }
   };
 
+  useEffect(() => {}, []);
+
   const handleSaveEvaluationReview = async (id) => {
     const evaluation = evaluations[id] || "";
     const review = reviews[id] || "";
@@ -597,6 +617,7 @@ const EmployeeReportList = () => {
         `${process.env.REACT_APP_API_URL}/post_emp_report`,
         payload
       );
+
       if (response.data.status === "Success") {
         alert("Evaluation and Review saved successfully");
         fetchReportData();
@@ -925,9 +946,20 @@ const EmployeeReportList = () => {
                                     {subCategoryItem.report ||
                                       "No report available."}
                                   </td>
+                                  {console.log("evaluations", evaluations)}
                                   <td className="border px-6 py-4">
                                     <input
                                       type="text"
+                                      disabled={
+                                        reportItem.evaluation?.[
+                                          subCategoryItem.projectName
+                                        ]?.[
+                                          subCategoryItem.subCategory
+                                            .subCategoryName
+                                        ]
+                                          ? true
+                                          : false
+                                      }
                                       value={
                                         evaluations?.[reportItem.id]?.[
                                           detailItem.projectName
@@ -959,6 +991,16 @@ const EmployeeReportList = () => {
                                   <td className="border px-6 py-4">
                                     <input
                                       type="text"
+                                      disabled={
+                                        reportItem.review?.[
+                                          subCategoryItem.projectName
+                                        ]?.[
+                                          subCategoryItem.subCategory
+                                            .subCategoryName
+                                        ]
+                                          ? true
+                                          : false
+                                      }
                                       value={
                                         teamLeaderReviews?.[reportItem.id]?.[
                                           detailItem.projectName
@@ -1132,11 +1174,11 @@ const EmployeeReportList = () => {
                                       "No report available."}
                                   </td>
                                   <td className="border px-6 py-4">
-                                    {dateItem.review ||
+                                    {dateItem.evaluation ||
                                       "No admin review available."}
                                   </td>
                                   <td className="border px-6 py-4">
-                                    {dateItem.evaluation ||
+                                    {dateItem.review ||
                                       "No team leader review available."}
                                   </td>
                                   {userType === "employee" &&
