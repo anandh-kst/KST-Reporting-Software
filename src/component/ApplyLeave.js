@@ -31,7 +31,7 @@ const ApplyLeave = () => {
     "Work From Home",
     "Maternity Leave",
     "Permission",
-    "Saturday Off",
+    // "Saturday Off",
     "Loss of Pay Leave",
   ];
 
@@ -283,11 +283,11 @@ const ApplyLeave = () => {
                     {type}
                   </option>
                 ))}
-                {formData.startDate &&
+                {/* {formData.startDate &&
                   isSaturday(formData.startDate) &&
                   !saturdayOffUsed && (
                     <option value="Saturday Off">Saturday Off</option>
-                  )}
+                  )} */}
               </select>
             </div>
             <div className="col-md-6 apply-leave-form-group">

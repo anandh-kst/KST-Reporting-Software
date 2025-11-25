@@ -412,7 +412,7 @@ const AttendanceReport = () => {
                   if (["P", "SO", "CL", "PE", "S", "WFH"].includes(status)) totalPresent++;
                   return status;
                 });
-
+                
                 const totalWorkingDays = year === moment().format("YYYY") && monthNumber === moment().format("MM") ?
                   moment().date() : fullMonthDays;
 
@@ -541,10 +541,10 @@ const AttendanceReport = () => {
                             }
                             if (date.day() === 0) status = "S";
                           }
-
                           if (status === "LOP" || status === "LOP-H") totalAbsent += status === "LOP-H" ? 0.5 : 1;
                           if (status === "H" || status === "CL-H" || status === "LOP-H") halfDayCount++;
                           if (["P", "SO", "CL", "PE", "S", "WFH"].includes(status)) totalPresent++;
+                          if(status === "SO") summary.SaturdayOff++;
                           return status;
                         });
 
