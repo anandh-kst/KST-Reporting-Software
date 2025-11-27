@@ -3,6 +3,8 @@ import axios from "axios";
 import moment from "moment";
 import * as XLSX from "xlsx";
 import "./AttendanceReport.css";
+import { useSelector } from "react-redux";
+import { useNavigate } from "react-router-dom";
 
 const AttendanceReport = () => {
   const [leaveData, setLeaveData] = useState({});
@@ -17,6 +19,15 @@ const AttendanceReport = () => {
   const [salaryInputs, setSalaryInputs] = useState({});
   const [loading, setLoading] = useState(true);
   const [leaveSummary, setLeaveSummary] = useState({});
+  const { isAuth, userData } = useSelector((state) => state.login);
+  const navigate = useNavigate();
+
+
+    useEffect(() => {
+    if (userData.userType !== "Admin") {
+      navigate("/dashboard/dashboards");
+    }
+  }, []);
 
   const computeLeaveSummary = (employeeName) => {
     const leaves = leaveData[employeeName] || [];
@@ -512,11 +523,11 @@ const AttendanceReport = () => {
                           if (leave.leaveTypes.includes("LossofPay Leave") || leave.leaveTypes.includes("Loss of Pay Leave")) {
                             summary.LossOfPay += days;
                           }
-                          if (leave.leaveTypes.includes("Saturday Off")) {
-                            summary.SaturdayOff += days;
-                          }
+                          // if (leave.leaveTypes.includes("Saturday Off")) {
+                          //   summary.SaturdayOff += days;
+                          // }
                         });
-
+                        summary.SaturdayOff=0;
                         const dailyStatuses = Array.from({ length: fullMonthDays }, (_, dayIdx) => {
                           const date = moment(`${year}-${monthNumber}`, "YYYY-MM").date(dayIdx + 1);
                           if (date.isBefore(doj, "day")) {
@@ -544,7 +555,9 @@ const AttendanceReport = () => {
                           if (status === "LOP" || status === "LOP-H") totalAbsent += status === "LOP-H" ? 0.5 : 1;
                           if (status === "H" || status === "CL-H" || status === "LOP-H") halfDayCount++;
                           if (["P", "SO", "CL", "PE", "S", "WFH"].includes(status)) totalPresent++;
-                          if(status === "SO") summary.SaturdayOff++;
+                          if(status === "SO") {
+                              summary.SaturdayOff++;    
+                          };
                           return status;
                         });
 

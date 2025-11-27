@@ -403,6 +403,7 @@ import { Menu, MenuItem } from "@mui/material";
 import MoreVertIcon from "@mui/icons-material/MoreVert";
 import "./EmployeeList.css";
 import logo from "../img/logo/profile.png";
+import { useSelector } from "react-redux";
 
 const EmployeeStatus = () => {
   const [deactivatedEmployees, setDeactivatedEmployees] = useState([]);
@@ -414,6 +415,7 @@ const EmployeeStatus = () => {
   const navigate = useNavigate();
   const [menuAnchor, setMenuAnchor] = useState(null);
   const [selectedEmployee, setSelectedEmployee] = useState(null);
+  const { isAuth, userData } = useSelector((state) => state.login);
 
   useEffect(() => {
     const fetchDeactivatedEmployees = async () => {
@@ -446,6 +448,12 @@ const EmployeeStatus = () => {
 
     fetchDeactivatedEmployees();
   }, [page, maxDisplayCount]);
+
+  useEffect(() => {
+    if (userData.userType !== "Admin") {
+      navigate("/dashboard/dashboards");
+    }
+  }, []);
 
   const handleMenuOpen = (event, employee) => {
     setMenuAnchor(event.currentTarget);

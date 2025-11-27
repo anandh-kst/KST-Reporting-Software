@@ -438,6 +438,8 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
 import moment from "moment";
+import { useSelector } from "react-redux";
+import { useNavigate } from "react-router-dom";
 
 const LeaveApplications = () => {
   const [leaveApplications, setLeaveApplications] = useState([]);
@@ -449,6 +451,14 @@ const LeaveApplications = () => {
   const [selectedEmployeeId, setSelectedEmployeeId] = useState("");
   const [employeeList, setEmployeeList] = useState([]);
   const [selectedStatus, setSelectedStatus] = useState("");
+  const { isAuth, userData } = useSelector((state) => state.login);
+    const navigate = useNavigate();
+
+    useEffect(() => {
+    if (userData.userType !== "Admin") {
+      navigate("/dashboard/dashboards");
+    }
+  }, []);
 
   useEffect(() => {
     const fetchEmployeeList = async () => {

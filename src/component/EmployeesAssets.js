@@ -5,13 +5,21 @@ import { Link } from "react-router-dom";
 import axios from "axios";
 import moment from "moment";
 import { useNavigate } from "react-router-dom";
+import { useSelector } from "react-redux";
 
 
 const EmployeesAssets = () => {
   const [employees, setEmployees] = useState([]);
   const [assets, setAssets] = useState([]);
   const [menuOpen, setMenuOpen] = useState();
+  const { isAuth, userData } = useSelector((state) => state.login);
   const nav=useNavigate()
+
+    useEffect(() => {
+      if (userData.userType !== "Admin") {
+        nav("/dashboard/dashboards");
+      }
+    }, []);
 
   const getAssets = async () => {
     try {

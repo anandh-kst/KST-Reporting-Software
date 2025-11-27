@@ -492,6 +492,12 @@ const EmployeeMaster = () => {
       navigate("/");
     }
   }, [isAuth, navigate]);
+  
+  useEffect(() => {
+    if (userData.userType !== "Admin") {
+      navigate("/dashboard/dashboards");
+    }
+  }, []);
 
   useEffect(() => {
     setInterval(() => {
@@ -722,7 +728,6 @@ const EmployeeMaster = () => {
 
   // filter using permisons
 
-
   useEffect(() => {
     fetchAttendanceData();
   }, [employeeList]);
@@ -732,86 +737,94 @@ const EmployeeMaster = () => {
     console.log("Updated Leave Data:", leaveData);
   }, [leaveData]);
 
-
   // remove late punch from array who are having permissions
   const IST_OFFSET_MIN = 5.5 * 60;
 
-function toISTDateStringFromUTCStr(utcStr) {
-  const d = new Date(utcStr);
-  const istMs = d.getTime() + IST_OFFSET_MIN * 60 * 1000;
-  return new Date(istMs).toISOString().split("T")[0];
-}
+  function toISTDateStringFromUTCStr(utcStr) {
+    const d = new Date(utcStr);
+    const istMs = d.getTime() + IST_OFFSET_MIN * 60 * 1000;
+    return new Date(istMs).toISOString().split("T")[0];
+  }
 
-function formatLateStringFromMinutes(totalMins) {
-  const h = Math.floor(totalMins / 60);
-  const m = totalMins % 60;
-  return `${h} hrs ${m} mins`;
-}
+  function formatLateStringFromMinutes(totalMins) {
+    const h = Math.floor(totalMins / 60);
+    const m = totalMins % 60;
+    return `${h} hrs ${m} mins`;
+  }
 
-function adjustLatePunchesFromPunchIn(latePunches, approvedList, officeStart = "10:00") {
-  const [officeHourStr, officeMinStr] = officeStart.split(":");
-  const officeHour = Number(officeHourStr);
-  const officeMin = Number(officeMinStr);
-  const leaveMap = {};
-  approvedList.forEach((lv) => {
-    const istDate = toISTDateStringFromUTCStr(lv.startDate);
-    const key = `${lv.Employee_id}_${istDate}`;
-    if (!leaveMap[key]) leaveMap[key] = { fullDay: false, permissionMinutes: 0 };
+  function adjustLatePunchesFromPunchIn(
+    latePunches,
+    approvedList,
+    officeStart = "10:00"
+  ) {
+    const [officeHourStr, officeMinStr] = officeStart.split(":");
+    const officeHour = Number(officeHourStr);
+    const officeMin = Number(officeMinStr);
+    const leaveMap = {};
+    approvedList.forEach((lv) => {
+      const istDate = toISTDateStringFromUTCStr(lv.startDate);
+      const key = `${lv.Employee_id}_${istDate}`;
+      if (!leaveMap[key])
+        leaveMap[key] = { fullDay: false, permissionMinutes: 0 };
 
-    if (String(lv.leaveTimes).toLowerCase() === "fullday") {
-      leaveMap[key].fullDay = true;
-    }
+      if (String(lv.leaveTimes).toLowerCase() === "fullday") {
+        leaveMap[key].fullDay = true;
+      }
 
-    if (lv.leaveTypes === "Permission" && [1, 3, 5].includes(Number(lv.leaveTimingCategory))) {
-      let mins = 0;
-      if (Number(lv.leaveTimingCategory) === 1) mins = 240;
-      if (Number(lv.leaveTimingCategory) === 3) mins = 60;
-      if (Number(lv.leaveTimingCategory) === 5) mins = 120;
-      leaveMap[key].permissionMinutes += mins;
-    }
-  });
-  const result = [];
-  latePunches.forEach((rec) => {
-    if (!rec.punchIn || rec.punchIn.length === 0) return;
+      if (
+        lv.leaveTypes === "Permission" &&
+        [1, 3, 5].includes(Number(lv.leaveTimingCategory))
+      ) {
+        let mins = 0;
+        if (Number(lv.leaveTimingCategory) === 1) mins = 240;
+        if (Number(lv.leaveTimingCategory) === 3) mins = 60;
+        if (Number(lv.leaveTimingCategory) === 5) mins = 120;
+        leaveMap[key].permissionMinutes += mins;
+      }
+    });
+    const result = [];
+    latePunches.forEach((rec) => {
+      if (!rec.punchIn || rec.punchIn.length === 0) return;
 
-    const earliestUtcStr = rec.punchIn.slice().sort()[0];
-    const punchUtc = new Date(earliestUtcStr);
-    const punchUtcMs = punchUtc.getTime();
+      const earliestUtcStr = rec.punchIn.slice().sort()[0];
+      const punchUtc = new Date(earliestUtcStr);
+      const punchUtcMs = punchUtc.getTime();
 
-    const [y, mo, d] = rec.date.split("-").map(Number);
-    const thresholdUtcMs =
-      Date.UTC(y, mo - 1, d, officeHour, officeMin) - IST_OFFSET_MIN * 60 * 1000;
+      const [y, mo, d] = rec.date.split("-").map(Number);
+      const thresholdUtcMs =
+        Date.UTC(y, mo - 1, d, officeHour, officeMin) -
+        IST_OFFSET_MIN * 60 * 1000;
 
-    if (punchUtcMs <= thresholdUtcMs) return;
+      if (punchUtcMs <= thresholdUtcMs) return;
 
-    const lateMs = punchUtcMs - thresholdUtcMs;
-    const lateMinutes = Math.floor(lateMs / (60 * 1000));
+      const lateMs = punchUtcMs - thresholdUtcMs;
+      const lateMinutes = Math.floor(lateMs / (60 * 1000));
 
-    const leaveKey = `${rec.employeeId}_${rec.date}`;
-    const leaveInfo = leaveMap[leaveKey];
+      const leaveKey = `${rec.employeeId}_${rec.date}`;
+      const leaveInfo = leaveMap[leaveKey];
 
-    if (leaveInfo && leaveInfo.fullDay) return;
+      if (leaveInfo && leaveInfo.fullDay) return;
 
-    if (!leaveInfo || (leaveInfo.permissionMinutes || 0) === 0) {
+      if (!leaveInfo || (leaveInfo.permissionMinutes || 0) === 0) {
+        result.push({
+          ...rec,
+          lateString: formatLateStringFromMinutes(lateMinutes),
+        });
+        return;
+      }
+
+      const perm = leaveInfo.permissionMinutes;
+
+      if (perm >= lateMinutes) return;
+
+      const remaining = lateMinutes - perm;
       result.push({
         ...rec,
-        lateString: formatLateStringFromMinutes(lateMinutes),
+        lateString: formatLateStringFromMinutes(remaining),
       });
-      return;
-    }
-
-    const perm = leaveInfo.permissionMinutes;
-
-    if (perm >= lateMinutes) return;
-
-    const remaining = lateMinutes - perm;
-    result.push({
-      ...rec,
-      lateString: formatLateStringFromMinutes(remaining),
     });
-  });
-  return result; 
-}
+    return result;
+  }
 
   useEffect(() => {
     const fetchPunchDataToday = async () => {
@@ -933,8 +946,11 @@ function adjustLatePunchesFromPunchIn(latePunches, approvedList, officeStart = "
             });
           });
           console.log("lateArr", lateArr);
-          const latePunchesArray = adjustLatePunchesFromPunchIn(lateArr, approvedLeaves);
-          console.log("latePunchesArray",latePunchesArray)
+          const latePunchesArray = adjustLatePunchesFromPunchIn(
+            lateArr,
+            approvedLeaves
+          );
+          console.log("latePunchesArray", latePunchesArray);
           setLatePunchData(latePunchesArray);
           setMonthlyLatePunchSummary({
             totalDaysLate: daysLate,

@@ -2,6 +2,8 @@ import React, { useState, useEffect } from "react";
 import axios from "axios";
 import "./RulesForm.css";
 import moment from "moment";
+import { useSelector } from "react-redux";
+import { useNavigate } from "react-router-dom";
 
 const RulesForm = () => {
   const emptyForm = {
@@ -34,11 +36,19 @@ const RulesForm = () => {
   const [selectedRuleId, setSelectedRuleId] = useState(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
+  const { isAuth, userData } = useSelector((state) => state.login);
+  const navigate = useNavigate();
 
   const API_URL = process.env.REACT_APP_API_URL;
 
   useEffect(() => {
     fetchRules();
+  }, []);
+
+    useEffect(() => {
+    if (userData.userType !== "Admin") {
+      navigate("/dashboard/dashboards");
+    }
   }, []);
 
   const fetchRules = async () => {

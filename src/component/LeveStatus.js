@@ -3,8 +3,14 @@
 import React, { useEffect, useState } from "react";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
+import { useSelector } from "react-redux";
+
+
 
 const LeaveApplications = () => {
+
+
+    const { isAuth, userData } = useSelector((state) => state.login);
   const now = new Date();
 
   const pad = (n) => n.toString().padStart(2, "0");
@@ -219,6 +225,12 @@ const LeaveApplications = () => {
   useEffect(() => {
     fetchLeaveApplications();
   }, []);
+   useEffect(() => {
+        console.log("userData",userData);
+        if (userData.userType !== "Employee") {
+          navigate("/dashboard/dashboard");
+        }
+      }, []);
 
   const handleFilterChange = (status, leaveType) => {
     setFilteredApplications(

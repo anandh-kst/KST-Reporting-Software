@@ -13,6 +13,8 @@ import {
 } from "recharts";
 
 import moment from "moment";
+import { useSelector } from "react-redux";
+import { useNavigate } from "react-router-dom";
 
 const LatePunchReport = () => {
   const [data, setData] = useState([]);
@@ -32,6 +34,15 @@ const LatePunchReport = () => {
   });
   const [showGraph, setShowGraph] = useState(false);
   const [summaryMap, setSummaryMap] = useState({});
+    const navigate = useNavigate();
+  const { isAuth, userData } = useSelector((state) => state.login);
+
+    useEffect(() => {
+    if (userData.userType !== "Admin") {
+      navigate("/dashboard/dashboards");
+    }
+  }, []);
+  
   // Convert total minutes to total seconds as integer
   const formatSeconds = (totalMinutes) => {
     return Math.round(totalMinutes * 60);

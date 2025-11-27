@@ -308,6 +308,7 @@ import axios from "axios";
 import * as XLSX from "xlsx";
 import { useNavigate } from "react-router-dom";
 import "./PunchReport.css";
+import { useSelector } from "react-redux";
 
 const PunchLogTable = () => {
   const navigate = useNavigate();
@@ -321,6 +322,7 @@ const PunchLogTable = () => {
   const [employees, setEmployees] = useState([]);
   const [selectedEmployee, setSelectedEmployee] = useState("");
   const [showExtraColumns, setShowExtraColumns] = useState(true);
+  const { isAuth, userData } = useSelector((state) => state.login);
 
   // Function to convert date string to Date object for proper sorting
   const parseDate = (dateStr) => {
@@ -331,6 +333,12 @@ const PunchLogTable = () => {
     }
     return new Date(dateStr);
   };
+
+  useEffect(() => {
+    if (userData.userType !== "Admin") {
+      navigate("/dashboard/dashboards");
+    }
+  }, []);
 
   // Fetch Punch Data
   useEffect(() => {

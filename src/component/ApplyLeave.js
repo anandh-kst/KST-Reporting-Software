@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react";
 import axios from "axios";
 import "./ApplyLeave.css";
 import { useNavigate } from "react-router-dom";
+import { useSelector } from "react-redux";
 
 const ApplyLeave = () => {
   const initialFormState = {
@@ -26,6 +27,7 @@ const ApplyLeave = () => {
     startDate: "",
     endDate: "",
   });
+    const { isAuth, userData } = useSelector((state) => state.login);
   const leaveTypeOptions = [
     "Casual Leave",
     "Work From Home",
@@ -64,6 +66,13 @@ const ApplyLeave = () => {
       }));
     }
   }, []);
+
+    useEffect(() => {
+      console.log("userData",userData);
+      if (userData.userType !== "Employee") {
+        navigate("/dashboard/dashboard");
+      }
+    }, []);
 
   const isSaturday = (date) => {
     const selectedDate = new Date(date);

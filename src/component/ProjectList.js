@@ -580,8 +580,12 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
 import { useNavigate, useLocation } from "react-router-dom";
+import { useSelector } from "react-redux";
 
 const ProjectList = () => {
+
+
+
   const navigate = useNavigate();
   const location = useLocation();
 
@@ -599,6 +603,14 @@ const ProjectList = () => {
     contact_number: "",
     mail_id: "",
   });
+  
+  const { isAuth, userData } = useSelector((state) => state.login);
+
+    useEffect(() => {
+    if (userData.userType !== "Admin") {
+      navigate("/dashboard/dashboards");
+    }
+  }, []);
 
   useEffect(() => {
     fetchProjects();

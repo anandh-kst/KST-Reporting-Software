@@ -197,6 +197,11 @@ const EmployeeList = () => {
       navigate("/");
     }
   }, [isAuth, navigate]);
+  useEffect(() => {
+    if (userData.userType !== "Admin") {
+      navigate("/dashboard/dashboards");
+    }
+  }, []);
 
   //const { employeeId } = useSelector((state) => state.login.userData);
   const employeeId = userData ? userData.employeeId : null;
@@ -260,7 +265,7 @@ const EmployeeList = () => {
       }
     }
   };
-console.log(employeeList)
+  console.log(employeeList);
   return (
     <div className="bg-white-smoke min-h-screen font-poppins">
       <div className="relative p-6">

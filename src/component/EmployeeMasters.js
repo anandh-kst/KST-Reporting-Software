@@ -8,8 +8,11 @@ import { useDispatch, useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
 import { Chart as ChartJS, ArcElement, Tooltip, Legend } from "chart.js";
 import { Pie } from "react-chartjs-2";
-import { closeModel, openModel, setHasModalShownToday } from "../Redux/slice/commonSlice";
-
+import {
+  closeModel,
+  openModel,
+  setHasModalShownToday,
+} from "../Redux/slice/commonSlice";
 
 // Register Chart.js components for v3+
 ChartJS.register(ArcElement, Tooltip, Legend);
@@ -142,10 +145,10 @@ const HeaderLeft = styled.div`
 
 const DateTimeContainer = styled.div`
   font-size: 1.5rem;
-  color: #C400AC;
+  color: #c400ac;
   margin-top: 0.25rem;
-  margin-right:1rem;
-  font-weight:800;
+  margin-right: 1rem;
+  font-weight: 800;
 
   @media (max-width: 768px) {
     font-size: 0.85rem;
@@ -211,20 +214,19 @@ const WelcomeText = styled.div`
     margin: 0.5rem 0;
     color: #6b7280;
     line-height: 1.5;
-
   }
 
   @media (max-width: 768px) {
-  display:flex;
-  flex-direction:column;
-  item-align: center;
-  justify-content: center;
-  max-width: 100%;
-  p{
-    font-size:16px;
-  }
+    display: flex;
+    flex-direction: column;
+    item-align: center;
+    justify-content: center;
+    max-width: 100%;
+    p {
+      font-size: 16px;
+    }
     h2 {
-      font-size:20px;
+      font-size: 20px;
     }
   }
 `;
@@ -504,13 +506,17 @@ const EmployeeMaster = () => {
     totalLateHours: 0,
   });
   const [calendarDays, setCalendarDays] = useState([]);
-  const [upcomingEventsWithin2Days, setUpcomingEventsWithin2Days] = useState([]);
-  const { isModelOpen, hasModalShownToday } = useSelector((state) => state.common);
+  const [upcomingEventsWithin2Days, setUpcomingEventsWithin2Days] = useState(
+    []
+  );
+  const { isModelOpen, hasModalShownToday } = useSelector(
+    (state) => state.common
+  );
   const [todayEvents, setTodayEvents] = useState([]);
- const [currentTimeWithSeconds, setCurrentTimeWithSeconds] = useState("");
+  const [currentTimeWithSeconds, setCurrentTimeWithSeconds] = useState("");
   const [holidays, setHolidays] = useState([]);
   const [loading, setLoading] = useState(true);
-
+  const navigate = useNavigate();
   const closeModal = () => {
     dispatch(closeModel());
     dispatch(setHasModalShownToday(true));
@@ -524,25 +530,25 @@ const EmployeeMaster = () => {
   const [success, setSuccess] = useState(false);
   const [error, setError] = useState("");
 
-  const navigate = useNavigate();
   const { isAuth, userData } = useSelector((state) => state.login);
-  useEffect(()=>{
+
+
+  useEffect(() => {
     setInterval(() => {
-       setCurrentTimeWithSeconds(moment().format("hh:mm:ss A"));
+      setCurrentTimeWithSeconds(moment().format("hh:mm:ss A"));
     }, 1000);
-  },[])
+  }, []);
   useEffect(() => {
     if (!isAuth) {
       navigate("/");
     }
   }, [isAuth, navigate]);
 
-
-  useEffect(()=>{
+  useEffect(() => {
     setInterval(() => {
-       setCurrentTimeWithSeconds(moment().format("hh:mm:ss A"));
+      setCurrentTimeWithSeconds(moment().format("hh:mm:ss A"));
     }, 1000);
-  },[])
+  }, []);
   // 1. SET DAILY QUOTE FROM EXTERNAL API, DATE/TIME, GREETING
   useEffect(() => {
     // Compute daily quote based on the day of the year
@@ -570,7 +576,9 @@ const EmployeeMaster = () => {
   // 2. FETCH EMPLOYEE LIST
   const fetchEmployeeList = async () => {
     try {
-      const response = await axios.post(`${process.env.REACT_APP_API_URL}/employee_list/`);
+      const response = await axios.post(
+        `${process.env.REACT_APP_API_URL}/employee_list/`
+      );
       if (response.data.status === "Success") {
         setEmployeeList(response.data.data);
         setEmployeeCount(response.data.data.length);
@@ -592,10 +600,13 @@ const EmployeeMaster = () => {
       const startDate = moment().format("YYYY-MM-DD");
       const endDate = moment().format("YYYY-MM-DD"); // Only fetch for today
       try {
-        const response = await axios.post(`${process.env.REACT_APP_API_URL}/getLeaveRequestsAll`, {
-          startDate: startDate,
-          endDate: endDate,
-        });
+        const response = await axios.post(
+          `${process.env.REACT_APP_API_URL}/getLeaveRequestsAll`,
+          {
+            startDate: startDate,
+            endDate: endDate,
+          }
+        );
 
         if (response.data && response.data.status === "Success") {
           const leaves = response.data.data;
@@ -603,7 +614,9 @@ const EmployeeMaster = () => {
             leaves.map(async (leave) => {
               if (!leave.employeeName) {
                 try {
-                  const empResponse = await axios.post(`${process.env.REACT_APP_API_URL}/getEmployeeById/${leave.employeeId}`);
+                  const empResponse = await axios.post(
+                    `${process.env.REACT_APP_API_URL}/getEmployeeById/${leave.employeeId}`
+                  );
                   return {
                     ...leave,
                     employeeName: empResponse.data.employeeName,
@@ -617,13 +630,18 @@ const EmployeeMaster = () => {
             })
           );
           setAttendanceStatus(enrichedLeaves);
-          const lossOfPayLeaves = enrichedLeaves.filter((leave) => leave.leaveType === "LossOfPay Leave");
+          const lossOfPayLeaves = enrichedLeaves.filter(
+            (leave) => leave.leaveType === "LossOfPay Leave"
+          );
           setAbsentEmployees(lossOfPayLeaves);
         } else {
           console.error("No leave data returned from API:", response.data);
         }
       } catch (error) {
-        console.error("Error fetching leave applications:", error.response?.data || error.message);
+        console.error(
+          "Error fetching leave applications:",
+          error.response?.data || error.message
+        );
       }
     };
     fetchLeaveApplications();
@@ -637,13 +655,18 @@ const EmployeeMaster = () => {
     const fetchPunchDataToday = async () => {
       const todayDate = moment().format("YYYY-MM-DD");
       try {
-        const rulesResponse = await axios.post(`${process.env.REACT_APP_API_URL}/get_save_rules`);
+        const rulesResponse = await axios.post(
+          `${process.env.REACT_APP_API_URL}/get_save_rules`
+        );
         let rules = {};
         if (rulesResponse.data) {
           rules = rulesResponse.data;
         }
 
-        const response = await axios.post(`${process.env.REACT_APP_API_URL}/dailypunch`, { date: todayDate });
+        const response = await axios.post(
+          `${process.env.REACT_APP_API_URL}/dailypunch`,
+          { date: todayDate }
+        );
         if (response.data) {
           setPunchDataToday(response.data);
           const lateArr = [];
@@ -656,7 +679,10 @@ const EmployeeMaster = () => {
           });
 
           response.data.forEach((item) => {
-            const employeeName = item.employeeName || employeeLookup[item.employeeId] || item.employeeId;
+            const employeeName =
+              item.employeeName ||
+              employeeLookup[item.employeeId] ||
+              item.employeeId;
             if (!groupedByEmployee[employeeName]) {
               groupedByEmployee[employeeName] = [];
             }
@@ -665,7 +691,9 @@ const EmployeeMaster = () => {
 
           Object.keys(groupedByEmployee).forEach((empKey) => {
             const employeeData = groupedByEmployee[empKey];
-            const inPunches = employeeData.filter((item) => item.logType === "In");
+            const inPunches = employeeData.filter(
+              (item) => item.logType === "In"
+            );
             const groupedByDate = inPunches.reduce((acc, item) => {
               const dateStr = new Date(item.logTime).toLocaleDateString();
               if (!acc[dateStr]) {
@@ -676,10 +704,14 @@ const EmployeeMaster = () => {
             }, {});
 
             Object.keys(groupedByDate).forEach((dateStr) => {
-              const times = groupedByDate[dateStr].sort((a, b) => new Date(a) - new Date(b));
+              const times = groupedByDate[dateStr].sort(
+                (a, b) => new Date(a) - new Date(b)
+              );
               const firstPunchTime = new Date(times[0]);
               const threshold = new Date(firstPunchTime);
-              let [hours, minutes] = rules.officeStartTime.split(":").map(Number);
+              let [hours, minutes] = rules.officeStartTime
+                .split(":")
+                .map(Number);
               threshold.setHours(hours, minutes, 0, 0);
 
               if (firstPunchTime > threshold) {
@@ -687,7 +719,9 @@ const EmployeeMaster = () => {
                 const lateMinutes = Math.round(diffMs / (1000 * 60));
                 const hours = Math.floor(lateMinutes / 60);
                 const minutes = lateMinutes % 60;
-                const lateString = `${hours} hr${hours !== 1 ? "s" : ""} ${minutes} min${minutes !== 1 ? "s" : ""}`;
+                const lateString = `${hours} hr${
+                  hours !== 1 ? "s" : ""
+                } ${minutes} min${minutes !== 1 ? "s" : ""}`;
 
                 lateArr.push({
                   date: dateStr,
@@ -723,7 +757,10 @@ const EmployeeMaster = () => {
     const endOfMonth = moment(now).endOf("month");
     const daysArray = [];
     let currentDay = startOfMonth.clone();
-    while (currentDay.isBefore(endOfMonth) || currentDay.isSame(endOfMonth, "day")) {
+    while (
+      currentDay.isBefore(endOfMonth) ||
+      currentDay.isSame(endOfMonth, "day")
+    ) {
       daysArray.push(currentDay.clone());
       currentDay.add(1, "day");
     }
@@ -735,7 +772,9 @@ const EmployeeMaster = () => {
       const upcomingBirthdays = employeeList
         .filter((employee) => {
           if (!employee.dateOfBirth) return false;
-          let birthdayThisYear = moment(employee.dateOfBirth).year(moment().year());
+          let birthdayThisYear = moment(employee.dateOfBirth).year(
+            moment().year()
+          );
           if (birthdayThisYear.isBefore(moment(), "day")) {
             birthdayThisYear.add(1, "year");
           }
@@ -743,25 +782,33 @@ const EmployeeMaster = () => {
           return diffDays >= 0 && diffDays <= 30;
         })
         .map((employee) => {
-          let birthdayThisYear = moment(employee.dateOfBirth).year(moment().year());
+          let birthdayThisYear = moment(employee.dateOfBirth).year(
+            moment().year()
+          );
           if (birthdayThisYear.isBefore(moment(), "day")) {
             birthdayThisYear.add(1, "year");
           }
           return {
             date: birthdayThisYear.format("DD MMM YYYY"),
             event: `${employee.name}'s Birthday`,
-            profileUrl: employee.profileUrl?.startsWith("http") ? employee.profileUrl : `${process.env.REACT_APP_API_URL}/uploads/Images/${employee.profileUrl}`,
+            profileUrl: employee.profileUrl?.startsWith("http")
+              ? employee.profileUrl
+              : `${process.env.REACT_APP_API_URL}/uploads/Images/${employee.profileUrl}`,
             birthdayDate: birthdayThisYear, // Store moment object for sorting
           };
         });
 
       // Sort by the calculated birthday date
-      const sortedBirthdays = upcomingBirthdays.sort((a, b) => a.birthdayDate - b.birthdayDate);
+      const sortedBirthdays = upcomingBirthdays.sort(
+        (a, b) => a.birthdayDate - b.birthdayDate
+      );
 
       setUpcomingEventsWithin2Days(upcomingBirthdays);
       // Check if today has any events
       const today = moment().format("DD MMM YYYY");
-      const todayEventsList = upcomingBirthdays.filter((evt) => evt.date === today);
+      const todayEventsList = upcomingBirthdays.filter(
+        (evt) => evt.date === today
+      );
 
       if (!isModelOpen) {
         if (todayEventsList.length > 0) {
@@ -781,13 +828,16 @@ const EmployeeMaster = () => {
         const month = now.getMonth() + 1;
         const startDate = `${year}-${String(month).padStart(2, "0")}-01`;
         const endDate = new Date(year, month, 0).toISOString().split("T")[0];
-        const response = await axios.post(`${process.env.REACT_APP_API_URL}/getLeaveApplications`, {
-          Employee_id: employeeId,
-          month: now.getMonth() + 1,
-          year: now.getFullYear(),
-          startDate: startDate,
-          endDate: endDate,
-        });
+        const response = await axios.post(
+          `${process.env.REACT_APP_API_URL}/getLeaveApplications`,
+          {
+            Employee_id: employeeId,
+            month: now.getMonth() + 1,
+            year: now.getFullYear(),
+            startDate: startDate,
+            endDate: endDate,
+          }
+        );
 
         setLeaveApplications(response.data.data);
         setFilteredApplications(response.data.data);
@@ -846,11 +896,15 @@ const EmployeeMaster = () => {
     setError("");
 
     try {
-      const response = await axios.post(`${process.env.REACT_APP_API_URL}/addEmployee`, formData, {
-        headers: {
-          "Content-Type": "multipart/form-data",
-        },
-      });
+      const response = await axios.post(
+        `${process.env.REACT_APP_API_URL}/addEmployee`,
+        formData,
+        {
+          headers: {
+            "Content-Type": "multipart/form-data",
+          },
+        }
+      );
       if (response.data.status === "Success") {
         setSuccess(true);
         fetchEmployeeList();
@@ -866,7 +920,9 @@ const EmployeeMaster = () => {
   useEffect(() => {
     const fetchHolidays = async () => {
       try {
-        const response = await axios.get(`${process.env.REACT_APP_API_URL}/get_upcoming_holidays`);
+        const response = await axios.get(
+          `${process.env.REACT_APP_API_URL}/get_upcoming_holidays`
+        );
         //       setHolidays(response.data.data);
         //     } catch (err) {
         //       setError("Failed to fetch holidays.");
@@ -906,9 +962,13 @@ const EmployeeMaster = () => {
     });
   };
 
-  if (loading) return <div className="text-center mt-10 text-blue-600">Loading holidays...</div>;
+  if (loading)
+    return (
+      <div className="text-center mt-10 text-blue-600">Loading holidays...</div>
+    );
 
-  if (error) return <div className="text-center mt-10 text-red-600">{error}</div>;
+  if (error)
+    return <div className="text-center mt-10 text-red-600">{error}</div>;
 
   // ========== Render ==========
   return (
@@ -923,74 +983,101 @@ const EmployeeMaster = () => {
       <ContentArea>
         <MainSection>
           <WelcomeCard>
-            <div
-             className="flex items-center flex-col  sm:flex-row "
-            >
-            <WelcomeText>
-                {
-                  userData?.userType === "Admin" ? (
-                    <h2>Hi <span >{userData?.employeeName}</span> Welcome to</h2>
-                  ) : (
-                    <h2 className="text-left">Hi {userData?.employeeName} Welcome to</h2>
-                  )
-                }
-                <p><span style={{color:"green",fontWeight:"700"}}>KST</span> Reporting Software</p>
+            <div className="flex items-center flex-col  sm:flex-row ">
+              <WelcomeText>
+                {userData?.userType === "Admin" ? (
+                  <h2>
+                    Hi <span>{userData?.employeeName}</span> Welcome to
+                  </h2>
+                ) : (
+                  <h2 className="text-left">
+                    Hi {userData?.employeeName} Welcome to
+                  </h2>
+                )}
+                <p>
+                  <span style={{ color: "green", fontWeight: "700" }}>KST</span>{" "}
+                  Reporting Software
+                </p>
                 <p>{greeting}, have a nice day !</p>
-            </WelcomeText>
-            <WelcomeImage src={welcomeImage} alt="Welcome" />
-              </div>
+              </WelcomeText>
+              <WelcomeImage src={welcomeImage} alt="Welcome" />
+            </div>
 
-            <QuoteText>
-              {quote}
-            </QuoteText>
+            <QuoteText>{quote}</QuoteText>
           </WelcomeCard>
-           <div className="mt-6 w-full">
+          <div className="mt-6 w-full">
             <div className="bg-white shadow-lg rounded-2xl overflow-hidden ">
               <div className="px-6 py-5 border-b border-gray-200">
-                <h1 className="text-xl font-bold text-gray-800">Leave Status for {moment().format("MMMM")}</h1>
+                <h1 className="text-xl font-bold text-gray-800">
+                  Leave Status for {moment().format("MMMM")}
+                </h1>
               </div>
               <div className="">
-              <div className="w-full px-4 py-5 overflow-x-auto inline-block ">
-                {filteredApplications.length > 0 ? (
-                  <table className="w-min-full text-sm text-gray-700 border border-gray-200 rounded-lg overflow-scroll">
-                    <thead className="bg-gray-100 text-xs text-gray-600 uppercase tracking-wider">
-                      <tr>
-                        <th className="px-4 py-2 text-left whitespace-nowrap">Leave Type</th>
-                        <th className="px-4 py-2 text-left">Status</th>
-                        <th className="px-4 py-2 text-left">From</th>
-                        <th className="px-4 py-2 text-left">To</th>
-                        <th className="px-4 py-2 text-left whitespace-nowrap">Leave Time</th>
-                        <th className="px-4 py-2 text-left">Days</th>
-                        <th className="px-4 py-2 text-left">Reason</th>
-                      </tr>
-                    </thead>
-                    <tbody>
-                      {filteredApplications.map((application, index) => (
-                        <tr key={index} className="border-t border-gray-200 hover:bg-gray-50 transition">
-                          <td className="px-4 py-3">{application.leaveTypes}</td>
-                          <td className="px-4 py-3">
-                            <span
-                              className={`text-sm font-semibold px-2 py-1 rounded-full inline-block
-                    ${application.status === "Pending" ? "bg-yellow-100 text-yellow-800" : application.status === "Accepted" ? "bg-green-100 text-green-800" : "bg-red-100 text-red-800"}`}
-                            >
-                              {application.status}
-                            </span>
-                          </td>
-                          <td className="px-4 py-3">{formatDate(application.startDate)}</td>
-                          <td className="px-4 py-3">{formatDate(application.endDate)}</td>
-                          <td className="px-4 py-3">{application.leaveTimes}</td>
-                          <td className="px-4 py-3">{application.noOfDays}</td>
-                          <td className="px-4 py-3">{application.reason}</td>
+                <div className="w-full px-4 py-5 overflow-x-auto inline-block ">
+                  {filteredApplications.length > 0 ? (
+                    <table className="w-min-full text-sm text-gray-700 border border-gray-200 rounded-lg overflow-scroll">
+                      <thead className="bg-gray-100 text-xs text-gray-600 uppercase tracking-wider">
+                        <tr>
+                          <th className="px-4 py-2 text-left whitespace-nowrap">
+                            Leave Type
+                          </th>
+                          <th className="px-4 py-2 text-left">Status</th>
+                          <th className="px-4 py-2 text-left">From</th>
+                          <th className="px-4 py-2 text-left">To</th>
+                          <th className="px-4 py-2 text-left whitespace-nowrap">
+                            Leave Time
+                          </th>
+                          <th className="px-4 py-2 text-left">Days</th>
+                          <th className="px-4 py-2 text-left">Reason</th>
                         </tr>
-                      ))}
-                    </tbody>
-                  </table>
-                ) : (
-                  <div className="text-center text-gray-500 italic mt-4">No leave applications found for this month</div>
-                )}
+                      </thead>
+                      <tbody>
+                        {filteredApplications.map((application, index) => (
+                          <tr
+                            key={index}
+                            className="border-t border-gray-200 hover:bg-gray-50 transition"
+                          >
+                            <td className="px-4 py-3">
+                              {application.leaveTypes}
+                            </td>
+                            <td className="px-4 py-3">
+                              <span
+                                className={`text-sm font-semibold px-2 py-1 rounded-full inline-block
+                    ${
+                      application.status === "Pending"
+                        ? "bg-yellow-100 text-yellow-800"
+                        : application.status === "Accepted"
+                        ? "bg-green-100 text-green-800"
+                        : "bg-red-100 text-red-800"
+                    }`}
+                              >
+                                {application.status}
+                              </span>
+                            </td>
+                            <td className="px-4 py-3">
+                              {formatDate(application.startDate)}
+                            </td>
+                            <td className="px-4 py-3">
+                              {formatDate(application.endDate)}
+                            </td>
+                            <td className="px-4 py-3">
+                              {application.leaveTimes}
+                            </td>
+                            <td className="px-4 py-3">
+                              {application.noOfDays}
+                            </td>
+                            <td className="px-4 py-3">{application.reason}</td>
+                          </tr>
+                        ))}
+                      </tbody>
+                    </table>
+                  ) : (
+                    <div className="text-center text-gray-500 italic mt-4">
+                      No leave applications found for this month
+                    </div>
+                  )}
+                </div>
               </div>
-              </div>
-
             </div>
 
             {/* Optional animation keyframe */}
@@ -1025,7 +1112,7 @@ const EmployeeMaster = () => {
                 <p>No attendance status updates.</p>
               )}
             </div>
-          </StatsCard> */} 
+          </StatsCard> */}
 
           {/* <LatePunchContainer>
             <h3>Late Punches for Today</h3>
@@ -1100,12 +1187,21 @@ const EmployeeMaster = () => {
                 </div>
               ))}
               {/* Add empty cells before the 1st day to align correctly */}
-              {calendarDays.length > 0 && Array.from({ length: calendarDays[0].day() }, (_, index) => <div key={`empty-${index}`} className="calendar-cell empty-cell"></div>)}
+              {calendarDays.length > 0 &&
+                Array.from({ length: calendarDays[0].day() }, (_, index) => (
+                  <div
+                    key={`empty-${index}`}
+                    className="calendar-cell empty-cell"
+                  ></div>
+                ))}
               {calendarDays.map((dayObj) => {
                 const dayNumber = dayObj.format("D");
                 const isToday = dayObj.isSame(moment(), "day");
                 return (
-                  <div key={dayObj.toString()} className={`calendar-cell ${isToday ? "current-day" : ""}`}>
+                  <div
+                    key={dayObj.toString()}
+                    className={`calendar-cell ${isToday ? "current-day" : ""}`}
+                  >
                     {dayNumber}
                   </div>
                 );
@@ -1180,12 +1276,15 @@ const EmployeeMaster = () => {
                           margin: 0,
                         }}
                       >
-                        🎂 Happy Birthday, {evt.event.split("'s Birthday")[0]}! 🎉
+                        🎂 Happy Birthday, {evt.event.split("'s Birthday")[0]}!
+                        🎉
                       </p>
                     </li>
                   ))}
                 </ul>
-                <p style={{ fontSize: "14px", color: "#ff9800" }}>🎊 Wishing you a fantastic day! 🎊</p>
+                <p style={{ fontSize: "14px", color: "#ff9800" }}>
+                  🎊 Wishing you a fantastic day! 🎊
+                </p>
                 <button
                   onClick={closeModal}
                   style={{
@@ -1216,10 +1315,16 @@ const EmployeeMaster = () => {
                       display: "flex",
                       alignItems: "center",
                       marginBottom: "10px",
+                      gap: "10px",
                     }}
                   >
                     <div>
-                      <img src={evt.profileUrl} alt="Profile" className="w-10 h-10 rounded-full" style={{ marginRight: "10px" }} />
+                      <img
+                        src={evt.profileUrl}
+                        alt="Profile"
+                        className="w-10 h-10 rounded-full"
+                        style={{ marginRight: "10px" }}
+                      />
                     </div>
                     <div>
                       <p key={idx}>
@@ -1234,17 +1339,27 @@ const EmployeeMaster = () => {
             )}
           </UpcomingCard>
 
-          <div className="mt-6 bg-white p-4 rounded-xl shadow-sm" style={{ marginTop: "-20px" }}>
-            <h1 className="text-lg font-semibold text-gray-800 mb-4">Upcoming Holidays</h1>
+          <div
+            className="mt-6 bg-white p-4 rounded-xl shadow-sm"
+            style={{ marginTop: "-20px" }}
+          >
+            <h1 className="text-lg font-semibold text-gray-800 mb-4">
+              Upcoming Holidays
+            </h1>
             <ul className="ml-8 space-y-2 text-sm text-gray-600">
               {holidays.length > 0 ? (
                 holidays.map((holiday) => (
                   <li key={holiday.id}>
-                    <span className="font-medium uppercase">{holiday.eventName}</span> — {formatDate(holiday.startDate)}
+                    <span className="font-medium uppercase">
+                      {holiday.eventName}
+                    </span>{" "}
+                    — {formatDate(holiday.startDate)}
                   </li>
                 ))
               ) : (
-                <li className="text-sm text-gray-500">No upcoming holidays in the next 3 months.</li>
+                <li className="text-sm text-gray-500">
+                  No upcoming holidays in the next 3 months.
+                </li>
               )}
             </ul>
           </div>
